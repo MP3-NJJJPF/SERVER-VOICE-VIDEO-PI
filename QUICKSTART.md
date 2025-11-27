@@ -11,6 +11,7 @@ Guía rápida para iniciar el servidor de voz en 5 minutos.
 ## 🚀 Instalación Rápida
 
 ### 1️⃣ Instalar dependencias
+
 ```bash
 npm install
 ```
@@ -20,6 +21,7 @@ npm install
 1. Ve a [Firebase Console](https://console.firebase.google.com/)
 2. Crea un nuevo proyecto o usa uno existente
 3. Genera una nueva clave de servicio:
+
    - Ir a Project Settings → Service Accounts
    - Click en "Generate New Private Key"
    - Se descargará un JSON
@@ -32,6 +34,7 @@ cp .env.example .env
 ```
 
 5. Edita `.env` con tus valores:
+
 ```env
 FIREBASE_PROJECT_ID=tu-project-id
 FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
@@ -41,11 +44,13 @@ FIREBASE_CLIENT_EMAIL=tu-firebase-adminsdk@tu-project.iam.gserviceaccount.com
 ### 3️⃣ Ejecutar servidor
 
 **Desarrollo (con auto-reload):**
+
 ```bash
 npm run dev
 ```
 
 **Producción:**
+
 ```bash
 npm run build
 npm start
@@ -109,21 +114,23 @@ client.leaveMeeting();
 
 ## 🔧 Variables de entorno más comunes
 
-| Variable | Valor por defecto | Descripción |
-|----------|-------------------|-------------|
-| `PORT` | `3001` | Puerto del servidor |
-| `NODE_ENV` | `development` | Entorno |
+| Variable      | Valor por defecto       | Descripción         |
+| ------------- | ----------------------- | ------------------- |
+| `PORT`        | `3001`                  | Puerto del servidor |
+| `NODE_ENV`    | `development`           | Entorno             |
 | `SOCKET_CORS` | `http://localhost:3000` | CORS para Socket.io |
 
 ## 🐛 Debugging
 
 ### Ver logs detallados
+
 ```bash
 # Ya están habilitados por defecto
 # Verás logs con colores y emojis
 ```
 
 ### Habilitar DEBUG de Socket.io
+
 ```bash
 DEBUG=socket.io* npm run dev
 ```
@@ -145,11 +152,13 @@ src/
 ## 🆘 Problemas Comunes
 
 ### ❌ "FIREBASE_PRIVATE_KEY not found"
+
 ```
 ✅ Solución: Asegúrate de que .env existe y tiene FIREBASE_PRIVATE_KEY
 ```
 
 ### ❌ "EADDRINUSE: address already in use :::3001"
+
 ```
 ✅ Solución: Puerto 3001 en uso. Cambia PORT en .env o mata el proceso:
    Linux/Mac: lsof -ti:3001 | xargs kill -9
@@ -157,11 +166,13 @@ src/
 ```
 
 ### ❌ "Cannot find module 'express'"
+
 ```
 ✅ Solución: npm install
 ```
 
 ### ❌ "Socket.io CORS error"
+
 ```
 ✅ Solución: Actualiza SOCKET_CORS en .env con tu cliente URL
 ```
@@ -169,6 +180,7 @@ src/
 ## 📚 Documentación completa
 
 Ver `README.md` para:
+
 - API endpoints detallados
 - Eventos de Socket.io
 - Ejemplos de cliente

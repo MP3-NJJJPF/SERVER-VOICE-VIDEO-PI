@@ -90,6 +90,7 @@ docker-compose logs -f voice-server
 ## 📡 ENDPOINTS HTTP (CON CURL)
 
 ### Crear Reunión
+
 ```bash
 curl -X POST http://localhost:3001/api/meetings \
   -H "Content-Type: application/json" \
@@ -101,48 +102,56 @@ curl -X POST http://localhost:3001/api/meetings \
 ```
 
 ### Obtener Reuniones Activas
+
 ```bash
 curl http://localhost:3001/api/meetings/active \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Obtener Detalles de Reunión
+
 ```bash
 curl http://localhost:3001/api/meetings/MEETING_ID \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Obtener Participantes
+
 ```bash
 curl http://localhost:3001/api/meetings/MEETING_ID/participants \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Unirse a Reunión
+
 ```bash
 curl -X POST http://localhost:3001/api/meetings/MEETING_ID/join \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Salir de Reunión
+
 ```bash
 curl -X POST http://localhost:3001/api/meetings/MEETING_ID/leave \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Finalizar Reunión
+
 ```bash
 curl -X POST http://localhost:3001/api/meetings/MEETING_ID/end \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Obtener Streams de Audio
+
 ```bash
 curl http://localhost:3001/api/audio/meetings/MEETING_ID/streams \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 ```
 
 ### Cambiar Calidad de Audio
+
 ```bash
 curl -X PUT http://localhost:3001/api/audio/streams/STREAM_ID/quality \
   -H "Content-Type: application/json" \
@@ -153,18 +162,21 @@ curl -X PUT http://localhost:3001/api/audio/streams/STREAM_ID/quality \
 ## 🔧 DESARROLLO
 
 ### Editar archivo y guardar (hot reload automático)
+
 ```bash
 npm run dev
 # Los cambios se detectan automáticamente
 ```
 
 ### Ver logs en tiempo real
+
 ```bash
 npm run dev
 # Los logs aparecen con colores y emojis
 ```
 
 ### Debugging
+
 ```bash
 # Con NODE_DEBUG
 NODE_DEBUG=http npm run dev
@@ -230,6 +242,7 @@ kill -9 1234
 ## 🚨 TROUBLESHOOTING
 
 ### Puerto en uso
+
 ```bash
 # Cambiar puerto en .env
 PORT=3002
@@ -239,12 +252,14 @@ lsof -ti:3001 | xargs kill -9
 ```
 
 ### Node modules corrupto
+
 ```bash
 rm -rf node_modules package-lock.json
 npm install
 ```
 
 ### TypeScript errores
+
 ```bash
 # Verificar tipos
 tsc --noEmit
@@ -254,6 +269,7 @@ npm run build
 ```
 
 ### Firebase no conecta
+
 ```bash
 # Verificar .env tiene todas las variables
 cat .env
@@ -273,6 +289,7 @@ cat .env
 ## 🎯 FLUJOS COMUNES
 
 ### Desarrollo Local Completo
+
 ```bash
 # Terminal 1: Servidor
 npm run dev
@@ -285,6 +302,7 @@ bash test_server.sh
 ```
 
 ### Deploy a Producción
+
 ```bash
 # 1. Compilar
 npm run build
@@ -303,6 +321,7 @@ heroku logs --tail
 ```
 
 ### Debugging Socket.io
+
 ```bash
 # Ver eventos
 DEBUG=socket.io*,socket.io-parser npm run dev

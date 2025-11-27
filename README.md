@@ -16,30 +16,35 @@ Servidor de transmisión de voz en tiempo real para aplicaciones tipo Meet. Prop
 ## 🚀 Instalación
 
 ### Requisitos previos
-- Node.js 16+ 
+
+- Node.js 16+
 - npm o yarn
 - Credenciales de Firebase (archivo de configuración JSON)
 
 ### Pasos de instalación
 
 1. **Clonar el repositorio**
+
 ```bash
 git clone <tu-repositorio>
 cd SERVER-VOICE-PI
 ```
 
 2. **Instalar dependencias**
+
 ```bash
 npm install
 ```
 
 3. **Configurar variables de entorno**
-Copia `.env.example` a `.env` y completa con tus datos:
+   Copia `.env.example` a `.env` y completa con tus datos:
+
 ```bash
 cp .env.example .env
 ```
 
 Edita `.env` con tus valores:
+
 ```env
 PORT=3001
 NODE_ENV=development
@@ -62,11 +67,13 @@ VIDEO_SERVER_URL=http://localhost:3002
 ## 🏃 Ejecución
 
 ### Desarrollo (con hot reload)
+
 ```bash
 npm run dev
 ```
 
 ### Producción
+
 ```bash
 npm run build
 npm start
@@ -77,6 +84,7 @@ npm start
 ### Reuniones
 
 #### Crear reunión
+
 ```http
 POST /api/meetings
 Authorization: Bearer <firebase-token>
@@ -102,6 +110,7 @@ Response: 201
 ```
 
 #### Obtener reuniones activas
+
 ```http
 GET /api/meetings/active
 Authorization: Bearer <firebase-token>
@@ -114,6 +123,7 @@ Response: 200
 ```
 
 #### Obtener detalles de reunión
+
 ```http
 GET /api/meetings/:meetingId
 Authorization: Bearer <firebase-token>
@@ -126,6 +136,7 @@ Response: 200
 ```
 
 #### Unirse a reunión
+
 ```http
 POST /api/meetings/:meetingId/join
 Authorization: Bearer <firebase-token>
@@ -144,6 +155,7 @@ Response: 200
 ```
 
 #### Salir de reunión
+
 ```http
 POST /api/meetings/:meetingId/leave
 Authorization: Bearer <firebase-token>
@@ -156,6 +168,7 @@ Response: 200
 ```
 
 #### Finalizar reunión (solo creador)
+
 ```http
 POST /api/meetings/:meetingId/end
 Authorization: Bearer <firebase-token>
@@ -168,6 +181,7 @@ Response: 200
 ```
 
 #### Obtener participantes
+
 ```http
 GET /api/meetings/:meetingId/participants
 Authorization: Bearer <firebase-token>
@@ -182,6 +196,7 @@ Response: 200
 ### Audio Streams
 
 #### Obtener streams activos de una reunión
+
 ```http
 GET /api/audio/meetings/:meetingId/streams
 Authorization: Bearer <firebase-token>
@@ -194,6 +209,7 @@ Response: 200
 ```
 
 #### Cambiar calidad de audio
+
 ```http
 PUT /api/audio/streams/:streamId/quality
 Authorization: Bearer <firebase-token>
@@ -211,6 +227,7 @@ Response: 200
 ```
 
 #### Detener stream
+
 ```http
 POST /api/audio/streams/:streamId/stop
 Authorization: Bearer <firebase-token>
@@ -230,13 +247,13 @@ Response: 200
 // Unirse a reunión
 socket.emit('join-meeting', {
   userId: 'user-uid',
-  meetingId: 'meeting-uuid'
+  meetingId: 'meeting-uuid',
 });
 
 // Salir de reunión
 socket.emit('leave-meeting', {
   userId: 'user-uid',
-  meetingId: 'meeting-uuid'
+  meetingId: 'meeting-uuid',
 });
 
 // Enviar WebRTC Offer
@@ -244,7 +261,7 @@ socket.emit('webrtc-offer', {
   from: 'user-id-1',
   to: 'user-id-2',
   offer: rtcSessionDescription,
-  meetingId: 'meeting-uuid'
+  meetingId: 'meeting-uuid',
 });
 
 // Enviar WebRTC Answer
@@ -252,7 +269,7 @@ socket.emit('webrtc-answer', {
   from: 'user-id-2',
   to: 'user-id-1',
   answer: rtcSessionDescription,
-  meetingId: 'meeting-uuid'
+  meetingId: 'meeting-uuid',
 });
 
 // Enviar ICE Candidate
@@ -260,7 +277,7 @@ socket.emit('ice-candidate', {
   from: 'user-id-1',
   to: 'user-id-2',
   candidate: iceCandidate,
-  meetingId: 'meeting-uuid'
+  meetingId: 'meeting-uuid',
 });
 
 // Ping para medir latencia
@@ -276,45 +293,45 @@ socket.emit('ping', (response) => {
 socket.on('user-joined', {
   userId: 'user-uid',
   socketId: 'socket-id',
-  message: 'Usuario se unió'
+  message: 'Usuario se unió',
 });
 
 // Usuario se fue
 socket.on('user-left', {
   userId: 'user-uid',
-  message: 'Usuario salió'
+  message: 'Usuario salió',
 });
 
 // WebRTC Offer recibido
 socket.on('webrtc-offer', {
   from: 'user-uid',
   offer: rtcSessionDescription,
-  meetingId: 'meeting-uuid'
+  meetingId: 'meeting-uuid',
 });
 
 // WebRTC Answer recibido
 socket.on('webrtc-answer', {
   from: 'user-uid',
   answer: rtcSessionDescription,
-  meetingId: 'meeting-uuid'
+  meetingId: 'meeting-uuid',
 });
 
 // ICE Candidate recibido
 socket.on('ice-candidate', {
   from: 'user-uid',
   candidate: iceCandidate,
-  meetingId: 'meeting-uuid'
+  meetingId: 'meeting-uuid',
 });
 
 // Lista de usuarios en reunión
 socket.on('meeting-users', {
-  users: ['socket-id-1', 'socket-id-2']
+  users: ['socket-id-1', 'socket-id-2'],
 });
 
 // Usuario desconectado
 socket.on('user-disconnected', {
   userId: 'user-uid',
-  message: 'Usuario se desconectó'
+  message: 'Usuario se desconectó',
 });
 ```
 
@@ -351,9 +368,14 @@ Authorization: Bearer <firebase-id-token>
 ```
 
 Para obtener el token en tu cliente:
+
 ```javascript
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, currentUser } from 'firebase/auth';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  currentUser,
+} from 'firebase/auth';
 
 const auth = getAuth();
 const user = auth.currentUser;
@@ -376,6 +398,7 @@ Response: 200
 ## 🎬 Próximas Integraciones
 
 ### Servidor de Video (Para Sprint 3)
+
 El servidor está preparado para integración con un servidor de video. Los puntos de extensión son:
 
 1. **Nueva ruta**: `POST /api/video/streams` - Crear streams de video
@@ -384,6 +407,7 @@ El servidor está preparado para integración con un servidor de video. Los punt
 4. **Modelo**: `VideoStream` - Similar a `AudioStream`
 
 ### Ejemplo de integración futura:
+
 ```typescript
 // En socketHandler.ts
 socket.on('webrtc-video-offer', (data: WebRTCOffer) => {
@@ -395,10 +419,12 @@ socket.on('webrtc-video-offer', (data: WebRTCOffer) => {
 ## ⚙️ Configuración de STUN Servers
 
 Los STUN servers ayudan a establecer conexiones P2P a través de NAT. Por defecto se usan:
+
 - `stun:stun.l.google.com:19302`
 - `stun:stun1.l.google.com:19302`
 
 Para agregar más, edita `.env`:
+
 ```env
 STUN_SERVERS=stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302,stun:stun2.l.google.com:19302
 ```
@@ -406,42 +432,50 @@ STUN_SERVERS=stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302,stun:stu
 ## 🧪 Pruebas
 
 ### Prueba de salud del servidor
+
 ```bash
 curl http://localhost:3001/health
 ```
 
 ### Prueba de información del servidor
+
 ```bash
 curl http://localhost:3001/api/server-info
 ```
 
 ## 📝 Variables de Entorno
 
-| Variable | Descripción | Ejemplo |
-|----------|------------|---------|
-| `PORT` | Puerto del servidor | `3001` |
-| `NODE_ENV` | Ambiente | `development` o `production` |
-| `FIREBASE_PROJECT_ID` | ID del proyecto Firebase | `my-project-id` |
-| `FIREBASE_PRIVATE_KEY` | Clave privada de Firebase | `-----BEGIN PRIVATE KEY-----...` |
+| Variable                | Descripción                   | Ejemplo                                             |
+| ----------------------- | ----------------------------- | --------------------------------------------------- |
+| `PORT`                  | Puerto del servidor           | `3001`                                              |
+| `NODE_ENV`              | Ambiente                      | `development` o `production`                        |
+| `FIREBASE_PROJECT_ID`   | ID del proyecto Firebase      | `my-project-id`                                     |
+| `FIREBASE_PRIVATE_KEY`  | Clave privada de Firebase     | `-----BEGIN PRIVATE KEY-----...`                    |
 | `FIREBASE_CLIENT_EMAIL` | Email de servicio de Firebase | `firebase-adminsdk@project.iam.gserviceaccount.com` |
-| `STUN_SERVERS` | Servidores STUN para WebRTC | `stun:stun.l.google.com:19302` |
-| `SOCKET_CORS` | Origen CORS para Socket.io | `http://localhost:3000` |
-| `VIDEO_SERVER_URL` | URL del servidor de video | `http://localhost:3002` |
+| `STUN_SERVERS`          | Servidores STUN para WebRTC   | `stun:stun.l.google.com:19302`                      |
+| `SOCKET_CORS`           | Origen CORS para Socket.io    | `http://localhost:3000`                             |
+| `VIDEO_SERVER_URL`      | URL del servidor de video     | `http://localhost:3002`                             |
 
 ## 🔗 Conexión con otros servidores
 
 ### Servidor de Usuarios
+
 El servidor de voz se integra con el servidor de usuarios mediante:
+
 - Firebase Authentication (mismo proyecto)
 - REST API para obtener información de usuarios
 
 ### Servidor de Chat
+
 No requiere integración directa, pero pueden compartir:
+
 - La misma reunión (meetingId)
 - Los mismos usuarios (Firebase UID)
 
 ### Servidor de Video (Futuro)
+
 Se conectará mediante:
+
 - WebRTC Signaling (Socket.io)
 - REST API para crear streams de video
 - Mismo evento de Socket.io para coordinación
@@ -449,6 +483,7 @@ Se conectará mediante:
 ## 🚨 Logging y Debugging
 
 El servidor incluye logging en consola:
+
 - ✅ (Verde) - Acciones exitosas
 - ❌ (Rojo) - Errores
 - 👤 (Persona) - Eventos de usuarios

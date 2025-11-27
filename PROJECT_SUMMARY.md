@@ -63,6 +63,7 @@ SERVER-VOICE-PI/
 ## 🎯 Características Implementadas
 
 ### ✅ Core de Audio
+
 - [x] WebRTC P2P para transmisión de voz
 - [x] Soporte para STUN servers
 - [x] Control de calidad adaptativa (low/medium/high)
@@ -70,6 +71,7 @@ SERVER-VOICE-PI/
 - [x] Streams de audio con metadata completa
 
 ### ✅ Gestión de Reuniones
+
 - [x] Crear reuniones
 - [x] Unirse/Salir de reuniones
 - [x] Finalizar reuniones
@@ -78,6 +80,7 @@ SERVER-VOICE-PI/
 - [x] Persistencia en Firestore
 
 ### ✅ Comunicación en Tiempo Real
+
 - [x] Socket.io para signaling de WebRTC
 - [x] Eventos de usuario (joined, left, disconnected)
 - [x] Transmisión de offers/answers/ICE candidates
@@ -85,17 +88,20 @@ SERVER-VOICE-PI/
 - [x] Ping/Pong para medir latencia
 
 ### ✅ Seguridad
+
 - [x] Autenticación Firebase OAuth
 - [x] Validación de tokens JWT
 - [x] CORS configurado
 - [x] Middleware de autenticación en todas las rutas
 
 ### ✅ Base de Datos
+
 - [x] Firestore para persistencia
 - [x] Colecciones: meetings, audioStreams
 - [x] Sincronización en tiempo real
 
 ### ✅ Código Profesional
+
 - [x] TypeScript con tipos completos
 - [x] Estructura escalable y modular
 - [x] Logging con emojis y colores
@@ -108,6 +114,7 @@ SERVER-VOICE-PI/
 ## 🚀 Cómo Empezar
 
 ### Instalación (3 pasos)
+
 ```bash
 # 1. Instalar dependencias
 npm install
@@ -120,6 +127,7 @@ npm run dev
 ```
 
 ### Verificar que funciona
+
 ```bash
 curl http://localhost:3001/health
 # Respuesta: {"status":"ok","timestamp":"...","uptime":1.23}
@@ -132,23 +140,25 @@ curl http://localhost:3001/health
 ## 📚 API Endpoints (REST)
 
 ### Reuniones
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `/api/meetings` | Crear reunión |
-| GET | `/api/meetings/active` | Obtener reuniones activas |
-| GET | `/api/meetings/:id` | Obtener detalles de reunión |
-| GET | `/api/meetings/:id/participants` | Obtener participantes |
-| POST | `/api/meetings/:id/join` | Unirse a reunión |
-| POST | `/api/meetings/:id/leave` | Salir de reunión |
-| POST | `/api/meetings/:id/end` | Finalizar reunión |
+
+| Método | Endpoint                         | Descripción                 |
+| ------ | -------------------------------- | --------------------------- |
+| POST   | `/api/meetings`                  | Crear reunión               |
+| GET    | `/api/meetings/active`           | Obtener reuniones activas   |
+| GET    | `/api/meetings/:id`              | Obtener detalles de reunión |
+| GET    | `/api/meetings/:id/participants` | Obtener participantes       |
+| POST   | `/api/meetings/:id/join`         | Unirse a reunión            |
+| POST   | `/api/meetings/:id/leave`        | Salir de reunión            |
+| POST   | `/api/meetings/:id/end`          | Finalizar reunión           |
 
 ### Audio
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/audio/meetings/:id/streams` | Obtener streams de audio |
-| GET | `/api/audio/streams/:id` | Obtener detalles de stream |
-| PUT | `/api/audio/streams/:id/quality` | Cambiar calidad |
-| POST | `/api/audio/streams/:id/stop` | Detener stream |
+
+| Método | Endpoint                          | Descripción                |
+| ------ | --------------------------------- | -------------------------- |
+| GET    | `/api/audio/meetings/:id/streams` | Obtener streams de audio   |
+| GET    | `/api/audio/streams/:id`          | Obtener detalles de stream |
+| PUT    | `/api/audio/streams/:id/quality`  | Cambiar calidad            |
+| POST   | `/api/audio/streams/:id/stop`     | Detener stream             |
 
 **→ Ver `README.md` para ejemplos completos con cURL**
 
@@ -157,6 +167,7 @@ curl http://localhost:3001/health
 ## 🔌 WebSocket Events
 
 ### Cliente → Servidor
+
 - `join-meeting` - Unirse a reunión
 - `leave-meeting` - Salir de reunión
 - `webrtc-offer` - Enviar oferta WebRTC
@@ -165,6 +176,7 @@ curl http://localhost:3001/health
 - `ping` - Medir latencia
 
 ### Servidor → Cliente
+
 - `user-joined` - Nuevo usuario en reunión
 - `user-left` - Usuario salió
 - `user-disconnected` - Usuario desconectado
@@ -180,16 +192,19 @@ curl http://localhost:3001/health
 ## 🎯 Integración con Otros Servidores
 
 ### ✅ Servidor de Usuarios
+
 - Mismo Firebase Project
 - REST API para obtener info de usuarios
 - UID de Firebase compartido
 
 ### ✅ Servidor de Chat
+
 - Mismo meetingId
 - Usuarios sincronizados vía Firebase
 - Sin integración directa necesaria
 
 ### ⏳ Servidor de Video (Futuro Sprint 3)
+
 - Arquitectura lista para integración
 - WebRTC signaling separado
 - Socket.io eventos para video
@@ -201,6 +216,7 @@ curl http://localhost:3001/health
 ## 📁 Archivos Clave por Funcionalidad
 
 ### Audio/Voz
+
 ```
 src/services/audioService.ts      - Crear/gestionar streams
 src/controllers/audioController.ts - Endpoints de audio
@@ -209,6 +225,7 @@ src/models/types.ts               - Interfaz AudioStream
 ```
 
 ### Reuniones
+
 ```
 src/services/meetingService.ts      - Crear/gestionar reuniones
 src/controllers/meetingController.ts - Endpoints de reuniones
@@ -217,12 +234,14 @@ src/models/types.ts                 - Interfaz Meeting
 ```
 
 ### Socket.io / WebRTC
+
 ```
 src/utils/socketHandler.ts - Eventos de Socket.io
 src/models/types.ts        - Interfaces WebRTC (Offer, Answer, ICE)
 ```
 
 ### Autenticación
+
 ```
 src/config/firebase.ts     - Inicialización Firebase
 src/middlewares/auth.ts    - Middleware de autenticación
@@ -233,6 +252,7 @@ src/middlewares/auth.ts    - Middleware de autenticación
 ## ⚙️ Configuración
 
 ### .env requerido
+
 ```env
 PORT=3001
 NODE_ENV=development
@@ -245,6 +265,7 @@ VIDEO_SERVER_URL=http://localhost:3002  # Para futuro
 ```
 
 ### Scripts npm
+
 ```bash
 npm start          # Producción (código compilado)
 npm run dev        # Desarrollo (ts-node-dev con hot reload)
@@ -256,16 +277,16 @@ npm run lint       # Ejecutar ESLint
 
 ## 📊 Estadísticas del Proyecto
 
-| Métrica | Cantidad |
-|---------|----------|
-| Archivos TypeScript | 11 |
-| Líneas de código | ~2,000+ |
-| Modelos/Tipos | 7 |
-| Endpoints HTTP | 7 |
-| Eventos Socket.io | 10 |
-| Servicios | 2 |
-| Controladores | 2 |
-| Documentación | 4 archivos |
+| Métrica             | Cantidad   |
+| ------------------- | ---------- |
+| Archivos TypeScript | 11         |
+| Líneas de código    | ~2,000+    |
+| Modelos/Tipos       | 7          |
+| Endpoints HTTP      | 7          |
+| Eventos Socket.io   | 10         |
+| Servicios           | 2          |
+| Controladores       | 2          |
+| Documentación       | 4 archivos |
 
 ---
 
@@ -284,17 +305,20 @@ npm run lint       # Ejecutar ESLint
 ## 📖 Documentación Disponible
 
 1. **README.md** (Principal)
+
    - API endpoints detallados
    - Socket.io events
    - Ejemplos con cURL
    - Configuración avanzada
 
 2. **QUICKSTART.md** (Rápido)
+
    - Setup en 5 minutos
    - Pruebas rápidas
    - Troubleshooting
 
 3. **INTEGRATION_VIDEO.md** (Video)
+
    - Arquitectura de integración
    - Ejemplos de código
    - Flujo de integración
@@ -309,12 +333,14 @@ npm run lint       # Ejecutar ESLint
 ## 🎓 Próximos Pasos
 
 ### Para Desarrollo
+
 1. [ ] Instalar dependencias: `npm install`
 2. [ ] Configurar Firebase: editar `.env`
 3. [ ] Ejecutar: `npm run dev`
 4. [ ] Probar endpoints con cURL
 
 ### Para Producción
+
 1. [ ] Compilar: `npm run build`
 2. [ ] Configurar variables seguras
 3. [ ] Deploy (Heroku, AWS, etc)
@@ -322,6 +348,7 @@ npm run lint       # Ejecutar ESLint
 5. [ ] Monitoreo y logs
 
 ### Para Integración
+
 1. [ ] Conectar servidor de usuarios existente
 2. [ ] Sincronizar meetingIds con chat
 3. [ ] Crear cliente (VoiceClient)
@@ -333,21 +360,25 @@ npm run lint       # Ejecutar ESLint
 ## 🆘 Soporte Rápido
 
 ### Verificar salud
+
 ```bash
 curl http://localhost:3001/health
 ```
 
 ### Ver estadísticas
+
 ```bash
 curl http://localhost:3001/api/stats
 ```
 
 ### Ver información del servidor
+
 ```bash
 curl http://localhost:3001/api/server-info
 ```
 
 ### Problemas comunes
+
 Ver `QUICKSTART.md` sección "Problemas Comunes"
 
 ---
@@ -355,6 +386,7 @@ Ver `QUICKSTART.md` sección "Problemas Comunes"
 ## 📞 Contacto
 
 Para preguntas o problemas:
+
 1. Ver documentación (README.md)
 2. Revisar logs en consola
 3. Verificar configuración de .env

@@ -52,15 +52,33 @@ console.log('\n💻 VERIFICANDO CÓDIGO...\n');
 // Verificar archivos TypeScript
 check('src/index.ts existe', fs.existsSync('src/index.ts'));
 check('src/config/firebase.ts existe', fs.existsSync('src/config/firebase.ts'));
-check('src/services/meetingService.ts existe', fs.existsSync('src/services/meetingService.ts'));
-check('src/services/audioService.ts existe', fs.existsSync('src/services/audioService.ts'));
-check('src/controllers/meetingController.ts existe', fs.existsSync('src/controllers/meetingController.ts'));
-check('src/controllers/audioController.ts existe', fs.existsSync('src/controllers/audioController.ts'));
+check(
+  'src/services/meetingService.ts existe',
+  fs.existsSync('src/services/meetingService.ts')
+);
+check(
+  'src/services/audioService.ts existe',
+  fs.existsSync('src/services/audioService.ts')
+);
+check(
+  'src/controllers/meetingController.ts existe',
+  fs.existsSync('src/controllers/meetingController.ts')
+);
+check(
+  'src/controllers/audioController.ts existe',
+  fs.existsSync('src/controllers/audioController.ts')
+);
 check('src/routes/meetings.ts existe', fs.existsSync('src/routes/meetings.ts'));
 check('src/routes/audio.ts existe', fs.existsSync('src/routes/audio.ts'));
-check('src/middlewares/auth.ts existe', fs.existsSync('src/middlewares/auth.ts'));
+check(
+  'src/middlewares/auth.ts existe',
+  fs.existsSync('src/middlewares/auth.ts')
+);
 check('src/models/types.ts existe', fs.existsSync('src/models/types.ts'));
-check('src/utils/socketHandler.ts existe', fs.existsSync('src/utils/socketHandler.ts'));
+check(
+  'src/utils/socketHandler.ts existe',
+  fs.existsSync('src/utils/socketHandler.ts')
+);
 check('src/utils/helpers.ts existe', fs.existsSync('src/utils/helpers.ts'));
 
 console.log('\n📚 VERIFICANDO DOCUMENTACIÓN...\n');
@@ -88,13 +106,16 @@ console.log('\n📦 VERIFICANDO DEPENDENCIES...\n');
 // Verificar package.json
 try {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-  
+
   const deps = pkg.dependencies || {};
   check('express en dependencias', 'express' in deps);
   check('socket.io en dependencias', 'socket.io' in deps);
   check('firebase-admin en dependencias', 'firebase-admin' in deps);
-  check('typescript en devDependencies', 'typescript' in (pkg.devDependencies || {}));
-  
+  check(
+    'typescript en devDependencies',
+    'typescript' in (pkg.devDependencies || {})
+  );
+
   const scripts = pkg.scripts || {};
   check('Script: start', 'start' in scripts);
   check('Script: dev', 'dev' in scripts);
@@ -112,9 +133,18 @@ check('.env existe', envExists);
 
 if (envExists) {
   const env = fs.readFileSync('.env', 'utf8');
-  check('FIREBASE_PROJECT_ID configurado', env.includes('FIREBASE_PROJECT_ID='));
-  check('FIREBASE_PRIVATE_KEY configurado', env.includes('FIREBASE_PRIVATE_KEY='));
-  check('FIREBASE_CLIENT_EMAIL configurado', env.includes('FIREBASE_CLIENT_EMAIL='));
+  check(
+    'FIREBASE_PROJECT_ID configurado',
+    env.includes('FIREBASE_PROJECT_ID=')
+  );
+  check(
+    'FIREBASE_PRIVATE_KEY configurado',
+    env.includes('FIREBASE_PRIVATE_KEY=')
+  );
+  check(
+    'FIREBASE_CLIENT_EMAIL configurado',
+    env.includes('FIREBASE_CLIENT_EMAIL=')
+  );
 }
 
 console.log('\n📊 RESUMEN...\n');

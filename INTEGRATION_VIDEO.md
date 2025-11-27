@@ -57,9 +57,9 @@ Ambos servidores deben usar las **mismas credenciales de Firebase**:
 
 ```typescript
 // En .env de ambos servidores
-FIREBASE_PROJECT_ID=same-project-id
-FIREBASE_PRIVATE_KEY=same-private-key
-FIREBASE_CLIENT_EMAIL=same-client-email
+FIREBASE_PROJECT_ID = same - project - id;
+FIREBASE_PRIVATE_KEY = same - private - key;
+FIREBASE_CLIENT_EMAIL = same - client - email;
 ```
 
 ### 3. Modelo de Datos para Video
@@ -83,8 +83,8 @@ export interface Participant {
   userId: string;
   email: string;
   name: string;
-  audioStreamId: string;  // Referencia al servidor de voz
-  videoStreamId: string;  // Referencia al servidor de video
+  audioStreamId: string; // Referencia al servidor de voz
+  videoStreamId: string; // Referencia al servidor de video
   isAudioMuted: boolean;
   isVideoOn: boolean;
   joinedAt: Date;
@@ -101,7 +101,8 @@ En el servidor de video, sincronizar con el servidor de voz:
 import axios from 'axios';
 
 class MeetingSyncService {
-  private voiceServerUrl = process.env.VOICE_SERVER_URL || 'http://localhost:3001';
+  private voiceServerUrl =
+    process.env.VOICE_SERVER_URL || 'http://localhost:3001';
 
   /**
    * Obtener información de reunión del servidor de voz
@@ -150,16 +151,19 @@ Agregar eventos similares a los del servidor de voz:
 ```typescript
 // En socketHandler.ts del servidor de video
 
-socket.on('join-video-meeting', (data: { userId: string; meetingId: string }) => {
-  // Unierse a sala de video
-  socket.join(`video-meeting-${data.meetingId}`);
-  
-  // Notificar a otros usuarios
-  socket.to(`video-meeting-${data.meetingId}`).emit('video-user-joined', {
-    userId: data.userId,
-    socketId: socket.id,
-  });
-});
+socket.on(
+  'join-video-meeting',
+  (data: { userId: string; meetingId: string }) => {
+    // Unierse a sala de video
+    socket.join(`video-meeting-${data.meetingId}`);
+
+    // Notificar a otros usuarios
+    socket.to(`video-meeting-${data.meetingId}`).emit('video-user-joined', {
+      userId: data.userId,
+      socketId: socket.id,
+    });
+  }
+);
 
 socket.on('webrtc-video-offer', (data: WebRTCOffer) => {
   // Reenviar oferta de video
@@ -189,11 +193,14 @@ class MeetClient {
     this.videoClient = new VideoClient('http://localhost:3002');
   }
 
-  async joinMeeting(meetingId: string, options: {
-    audio: boolean;
-    video: boolean;
-    videoResolution?: '360p' | '480p' | '720p' | '1080p';
-  }): Promise<void> {
+  async joinMeeting(
+    meetingId: string,
+    options: {
+      audio: boolean;
+      video: boolean;
+      videoResolution?: '360p' | '480p' | '720p' | '1080p';
+    }
+  ): Promise<void> {
     this.currentMeetingId = meetingId;
 
     // Conectar voz si se solicita
@@ -244,12 +251,14 @@ router.post('/:streamId/stop', stopVideoStream);
 ### 8. Actualizar Variables de Entorno
 
 En el servidor de voz (`.env`):
+
 ```env
 VIDEO_SERVER_URL=http://localhost:3002
 VIDEO_SERVER_ENABLED=true
 ```
 
 En el servidor de video (`.env`):
+
 ```env
 VOICE_SERVER_URL=http://localhost:3001
 VOICE_SERVER_ENABLED=true
@@ -370,16 +379,19 @@ npm run test:integration
 ## 🚨 Errores Comunes en Integración
 
 ### Error: "Cannot connect to video server"
+
 ```
 Solución: Asegúrate que VIDEO_SERVER_URL está correcto en .env
 ```
 
 ### Error: "Firebase credentials mismatch"
+
 ```
 Solución: Ambos servidores deben usar MISMO projectId y keys
 ```
 
 ### Error: "User not in voice meeting"
+
 ```
 Solución: Usuario debe primero unirse al servidor de voz
 ```
@@ -397,6 +409,7 @@ Solución: Usuario debe primero unirse al servidor de voz
 ## 📞 Soporte
 
 Para preguntas sobre integración, consulta:
+
 - Documentación de Firebase: https://firebase.google.com/docs
 - Socket.io: https://socket.io/docs/
 - WebRTC: https://webrtc.org/getting-started/overview
