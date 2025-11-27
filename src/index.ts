@@ -10,11 +10,16 @@ import audioRoutes from './routes/audio';
 // Cargar variables de entorno
 dotenv.config();
 
+// Configurar orígenes permitidos para CORS
+const allowedOrigins = process.env.SOCKET_CORS
+  ? process.env.SOCKET_CORS.split(',').map(origin => origin.trim())
+  : ['http://localhost:3000'];
+
 const app = express();
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer, {
   cors: {
-    origin: process.env.SOCKET_CORS || 'http://localhost:3000',
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   },
@@ -28,7 +33,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: process.env.SOCKET_CORS || 'http://localhost:3000',
+    origin: (origin, callback) => {
+      // Permitir peticiones sin origin (como Postman)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
     credentials: true,
   })
 );
@@ -58,6 +71,20 @@ app.get('/api/server-info', (req, res) => {
     webrtcSupported: true,
     features: ['webrtc', 'socket.io', 'audio-streaming', 'meeting-management'],
     environment: process.env.NODE_ENV,
+  });
+});
+
+// Ruta para obtener configuración de ICE servers (STUN/TURN)
+app.get('/api/ice-servers', (req, res) => {
+  const stunServers = process.env.STUN_SERVERS
+    ? process.env.STUN_SERVERS.split(',').map(url => url.trim())
+    : ['stun:stun.l.google.com:19302'];
+
+  const iceServers = stunServers.map(url => ({ urls: url }));
+
+  res.json({
+    iceServers,
+    timestamp: new Date().toISOString(),
   });
 });
 
@@ -91,9 +118,9 @@ const PORT = process.env.PORT || 3001;
 httpServer.listen(PORT, () => {
   console.log(`
 ╔════════════════════════════════════════╗
-║     🎙️  VOICE SERVER INICIADO        ║
+║          VOICE SERVER INICIADO         ║
 ╚════════════════════════════════════════╝
-
+|
 📍 Servidor ejecutándose en puerto: ${PORT}
 🌐 CORS habilitado para: ${process.env.SOCKET_CORS || 'http://localhost:3000'}
 ⚙️  Entorno: ${process.env.NODE_ENV || 'development'}
