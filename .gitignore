@@ -16,3 +16,6 @@ build/
 *~
 .prettierignore
 .eslintignore
+RENDER_ENV_VARS.md
+RENDER_ENV_VARS.*
+

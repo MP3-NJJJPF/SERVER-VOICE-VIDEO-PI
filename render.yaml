@@ -19,9 +19,7 @@ services:
         value: 10000
       - key: SOCKET_CORS
         sync: false
-      - key: FIREBASE_PROJECT_ID
-        sync: false
-      - key: FIREBASE_PRIVATE_KEY
-        sync: false
-      - key: FIREBASE_CLIENT_EMAIL
+      - key: STUN_SERVERS
+        value: stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302,stun:stun2.l.google.com:19302,stun:stun3.l.google.com:19302
+      - key: GOOGLE_APPLICATION_CREDENTIALS
         sync: false
