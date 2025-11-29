@@ -121,18 +121,18 @@ httpServer.listen(PORT, () => {
 ║          VOICE SERVER INICIADO         ║
 ╚════════════════════════════════════════╝
 |
-📍 Servidor ejecutándose en puerto: ${PORT}
-🌐 CORS habilitado para: ${process.env.SOCKET_CORS || 'http://localhost:3000'}
-⚙️  Entorno: ${process.env.NODE_ENV || 'development'}
+ Servidor ejecutándose en puerto: ${PORT}
+ CORS habilitado para: ${process.env.SOCKET_CORS || 'http://localhost:3000'}
+ Entorno: ${process.env.NODE_ENV || 'development'}
 
-📚 Endpoints disponibles:
+Endpoints disponibles:
   • GET  /health              - Estado del servidor
   • GET  /api/server-info     - Información del servidor
   • GET  /api/stats           - Estadísticas en tiempo real
   • POST /api/meetings        - Crear reunión
   • GET  /api/meetings/active - Obtener reuniones activas
 
-🔗 WebSocket disponible en el puerto ${PORT}
+WebSocket disponible en el puerto ${PORT}
 
 `);
 });
