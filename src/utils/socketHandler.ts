@@ -16,25 +16,58 @@ class SocketIOHandler {
 
   private setupHandlers(): void {
     this.io.on('connection', (socket: Socket) => {
-      console.log(`✅ Cliente conectado: ${socket.id}`);
+      console.log(`Cliente conectado: ${socket.id}`);
 
-      // Evento: Usuario se une a una reunión
-      socket.on('join-meeting', (data: { userId: string; meetingId: string }) => {
-        this.handleJoinMeeting(socket, data);
+      // Evento: Usuario se une a una reunión (con callback)
+      socket.on('join-meeting', (data: { userId: string; meetingId: string; userName?: string }, callback) => {
+        console.log('join-meeting recibido:', data);
+        try {
+          this.handleJoinMeeting(socket, data);
+          
+          // Responder al cliente con éxito
+          if (callback && typeof callback === 'function') {
+            callback({ 
+              success: true, 
+              message: 'Joined successfully',
+              meetingId: data.meetingId,
+              userId: data.userId
+            });
+          }
+        } catch (error: any) {
+          console.error('Error en join-meeting:', error);
+          if (callback && typeof callback === 'function') {
+            callback({ 
+              success: false, 
+              error: error.message 
+            });
+          }
+        }
       });
 
       // Evento: Usuario se desconecta de una reunión
       socket.on('leave-meeting', (data: { userId: string; meetingId: string }) => {
+        console.log('leave-meeting recibido:', data);
         this.handleLeaveMeeting(socket, data);
+      });
+
+      // Evento: Toggle audio (mutear/desmutear)
+      socket.on('toggle-audio', (data: { userId: string; meetingId: string; isMuted: boolean }) => {
+        console.log('toggle-audio recibido:', data);
+        socket.to(`meeting-${data.meetingId}`).emit('audio-state-changed', {
+          userId: data.userId,
+          isMuted: data.isMuted,
+        });
       });
 
       // Evento: WebRTC Offer (usuario A ofrece conexión a usuario B)
       socket.on('webrtc-offer', (data: WebRTCOffer) => {
+        console.log('webrtc-offer de', data.from, 'para', data.to);
         this.handleWebRTCOffer(socket, data);
       });
 
       // Evento: WebRTC Answer (usuario B responde a usuario A)
       socket.on('webrtc-answer', (data: WebRTCAnswer) => {
+        console.log('webrtc-answer de', data.from, 'para', data.to);
         this.handleWebRTCAnswer(socket, data);
       });
 
@@ -45,11 +78,14 @@ class SocketIOHandler {
 
       // Evento: Test de latencia
       socket.on('ping', (callback) => {
-        callback('pong');
+        if (callback && typeof callback === 'function') {
+          callback('pong');
+        }
       });
 
       // Evento: Desconexión
       socket.on('disconnect', () => {
+        console.log(`Cliente desconectado: ${socket.id}`);
         this.handleDisconnect(socket);
       });
     });
@@ -60,9 +96,9 @@ class SocketIOHandler {
    */
   private handleJoinMeeting(
     socket: Socket,
-    data: { userId: string; meetingId: string }
+    data: { userId: string; meetingId: string; userName?: string }
   ): void {
-    const { userId, meetingId } = data;
+    const { userId, meetingId, userName } = data;
 
     // Registrar el socket del usuario
     if (!this.userSockets.has(userId)) {
@@ -74,22 +110,24 @@ class SocketIOHandler {
     // Unir el socket a una sala de Socket.io
     socket.join(`meeting-${meetingId}`);
 
-    console.log(`👤 ${userId} se unió a la reunión ${meetingId}`);
+    console.log(`${userId} (${userName || 'Sin nombre'}) se unió a la reunión ${meetingId}`);
 
     // Notificar a otros usuarios que un nuevo usuario se unió
     socket.to(`meeting-${meetingId}`).emit('user-joined', {
       userId,
       socketId: socket.id,
-      message: `${userId} se unió a la reunión`,
+      name: userName || userId,
+      message: `${userName || userId} se unió a la reunión`,
     });
 
-    // Enviar lista de usuarios activos
+    // Enviar lista de usuarios activos al nuevo usuario
+    const activeUsers = Array.from(
+      this.io.sockets.adapter.rooms.get(`meeting-${meetingId}`) || []
+    );
+    
     socket.emit('meeting-users', {
-      users: Array.from(
-        new Set(
-          Array.from(this.io.sockets.adapter.rooms.get(`meeting-${meetingId}`) || [])
-        )
-      ),
+      users: activeUsers,
+      count: activeUsers.length,
     });
   }
 
@@ -117,7 +155,7 @@ class SocketIOHandler {
       }
     }
 
-    console.log(`👤 ${userId} salió de la reunión ${meetingId}`);
+    console.log(`${userId} salió de la reunión ${meetingId}`);
 
     // Notificar a otros usuarios
     socket.to(`meeting-${meetingId}`).emit('user-left', {
@@ -135,12 +173,13 @@ class SocketIOHandler {
     targetSockets.forEach((targetSocketId) => {
       this.io.to(targetSocketId).emit('webrtc-offer', {
         from: data.from,
+        to: data.to,
         offer: data.offer,
         meetingId: data.meetingId,
       });
     });
 
-    console.log(`🎙️ WebRTC Offer de ${data.from} para ${data.to}`);
+    console.log(`WebRTC Offer de ${data.from} para ${data.to}`);
   }
 
   /**
@@ -152,12 +191,13 @@ class SocketIOHandler {
     targetSockets.forEach((targetSocketId) => {
       this.io.to(targetSocketId).emit('webrtc-answer', {
         from: data.from,
+        to: data.to,
         answer: data.answer,
         meetingId: data.meetingId,
       });
     });
 
-    console.log(`🎙️ WebRTC Answer de ${data.from} para ${data.to}`);
+    console.log(`WebRTC Answer de ${data.from} para ${data.to}`);
   }
 
   /**
@@ -169,10 +209,13 @@ class SocketIOHandler {
     targetSockets.forEach((targetSocketId) => {
       this.io.to(targetSocketId).emit('ice-candidate', {
         from: data.from,
+        to: data.to,
         candidate: data.candidate,
         meetingId: data.meetingId,
       });
     });
+
+    console.log(`ICE Candidate de ${data.from} para ${data.to}`);
   }
 
   /**
@@ -191,13 +234,13 @@ class SocketIOHandler {
         }
 
         if (meetingId) {
-          socket.to(`meeting-${meetingId}`).emit('user-disconnected', {
+          socket.to(`meeting-${meetingId}`).emit('user-left', {
             userId,
             message: `${userId} se desconectó`,
           });
         }
 
-        console.log(`❌ Usuario ${userId} desconectado`);
+        console.log(`Usuario ${userId} desconectado del socket ${socket.id}`);
         break;
       }
     }

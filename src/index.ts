@@ -117,20 +117,19 @@ app.use((err: any, req: any, res: any, next: any) => {
 const PORT = process.env.PORT || 3001;
 httpServer.listen(PORT, () => {
   console.log(`
-╔════════════════════════════════════════╗
-║          VOICE SERVER INICIADO         ║
-╚════════════════════════════════════════╝
-|
+
+         VOICE SERVER INICIADO        
+
  Servidor ejecutándose en puerto: ${PORT}
  CORS habilitado para: ${process.env.SOCKET_CORS || 'http://localhost:3000'}
  Entorno: ${process.env.NODE_ENV || 'development'}
 
 Endpoints disponibles:
-  • GET  /health              - Estado del servidor
-  • GET  /api/server-info     - Información del servidor
-  • GET  /api/stats           - Estadísticas en tiempo real
-  • POST /api/meetings        - Crear reunión
-  • GET  /api/meetings/active - Obtener reuniones activas
+  GET  /health              - Estado del servidor
+  GET  /api/server-info     - Información del servidor
+  GET  /api/stats           - Estadísticas en tiempo real
+  POST /api/meetings        - Crear reunión
+  GET  /api/meetings/active - Obtener reuniones activas
 
 WebSocket disponible en el puerto ${PORT}
 
