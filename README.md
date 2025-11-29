@@ -47,7 +47,7 @@ SOCKET_CORS=http://localhost:3000
 VIDEO_SERVER_URL=http://localhost:3002
 ```
 
-## 🏃 Ejecución
+##  Ejecución
 
 ### Desarrollo (con hot reload)
 
@@ -55,7 +55,7 @@ VIDEO_SERVER_URL=http://localhost:3002
 npm run dev
 ```
 
-## 📚 API Endpoints
+##  API Endpoints
 
 ### Reuniones
 
@@ -216,7 +216,7 @@ Response: 200
 ```
 
 
-## 🧪 Pruebas
+##  Pruebas
 
 ### Prueba de salud del servidor
 

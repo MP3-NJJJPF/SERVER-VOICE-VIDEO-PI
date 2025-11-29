@@ -45,7 +45,8 @@ FIREBASE_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----\ntu-clave-aqui\n-----END PRIVAT
 FIREBASE_CLIENT_EMAIL=firebase-adminsdk@tu-project.iam.gserviceaccount.com
 ```
 
-⚠️ **IMPORTANTE para FIREBASE_PRIVATE_KEY**: 
+ **IMPORTANTE para FIREBASE_PRIVATE_KEY**:
+
 - Copia la clave completa incluyendo los saltos de línea como `\n`
 - Debe estar entre comillas si lo configuras manualmente
 - O usa el editor de Render que maneja esto automáticamente
@@ -73,11 +74,13 @@ https://voice-server.onrender.com
 ## ✅ Verificar el Deploy
 
 ### 1. Health Check
+
 ```bash
 curl https://tu-servidor.onrender.com/health
 ```
 
 Respuesta esperada:
+
 ```json
 {
   "status": "ok",
@@ -87,11 +90,13 @@ Respuesta esperada:
 ```
 
 ### 2. ICE Servers (STUN)
+
 ```bash
 curl https://tu-servidor.onrender.com/api/ice-servers
 ```
 
 Respuesta esperada:
+
 ```json
 {
   "iceServers": [
@@ -103,6 +108,7 @@ Respuesta esperada:
 ```
 
 ### 3. Server Info
+
 ```bash
 curl https://tu-servidor.onrender.com/api/server-info
 ```
@@ -122,13 +128,18 @@ En tu código de frontend:
 import { io } from 'socket.io-client';
 
 // Conectar al servidor
-const socket = io(process.env.NEXT_PUBLIC_VOICE_SERVER_URL || 'http://localhost:3001', {
-  transports: ['websocket', 'polling'],
-  reconnection: true,
-});
+const socket = io(
+  process.env.NEXT_PUBLIC_VOICE_SERVER_URL || 'http://localhost:3001',
+  {
+    transports: ['websocket', 'polling'],
+    reconnection: true,
+  }
+);
 
 // Obtener ICE servers
-const response = await fetch(`${process.env.NEXT_PUBLIC_VOICE_SERVER_URL}/api/ice-servers`);
+const response = await fetch(
+  `${process.env.NEXT_PUBLIC_VOICE_SERVER_URL}/api/ice-servers`
+);
 const { iceServers } = await response.json();
 
 // Usar en RTCPeerConnection
@@ -138,6 +149,7 @@ const pc = new RTCPeerConnection({ iceServers });
 ## 🔐 Seguridad
 
 ### CORS
+
 El servidor ya está configurado para aceptar múltiples orígenes. Asegúrate de agregar tu dominio de Vercel en la variable `SOCKET_CORS`:
 
 ```bash
@@ -145,7 +157,9 @@ SOCKET_CORS=https://tu-app.vercel.app,https://preview-branch.vercel.app
 ```
 
 ### Firebase
+
 Si usas Firebase, asegúrate de:
+
 1. Configurar las reglas de Firestore
 2. Agregar tu dominio de Vercel a los dominios autorizados en Firebase Console
 
@@ -156,6 +170,7 @@ Render desplegará automáticamente cuando hagas push a tu rama principal (main)
 ## 📊 Monitoring
 
 En el dashboard de Render puedes ver:
+
 - Logs en tiempo real
 - Métricas de uso (CPU, memoria)
 - Historial de deploys
@@ -164,20 +179,24 @@ En el dashboard de Render puedes ver:
 ## 🐛 Troubleshooting
 
 ### El servidor no inicia
+
 1. Verifica los logs en Render Dashboard
 2. Asegúrate que `npm run build` funciona localmente
 3. Verifica que todas las dependencias estén en `package.json`
 
 ### Error de CORS
+
 1. Verifica que `SOCKET_CORS` incluya tu dominio de Vercel
 2. Incluye tanto `https://app.vercel.app` como `https://www.app.vercel.app` si usas ambos
 
 ### Socket.io no conecta
+
 1. Verifica que usas `transports: ['websocket', 'polling']`
 2. Asegúrate de usar HTTPS en producción
 3. Verifica que el puerto 10000 está abierto (Render lo maneja automáticamente)
 
 ### Firebase no funciona
+
 1. Verifica que `FIREBASE_PRIVATE_KEY` tiene los saltos de línea correctos (`\n`)
 2. Asegúrate que el service account tiene los permisos necesarios
 3. Si no usas Firebase, el servidor funciona en modo mock
@@ -185,12 +204,14 @@ En el dashboard de Render puedes ver:
 ## 💰 Costos
 
 **Plan Free de Render:**
+
 - ✅ 750 horas gratis al mes
 - ✅ Auto-sleep después de 15 minutos de inactividad
 - ✅ Suficiente para desarrollo y pruebas
 - ⚠️ Primer request puede tardar ~30 segundos (cold start)
 
 **Para producción:**
+
 - Considera el plan Starter ($7/mes) para eliminar el auto-sleep
 - O el plan Professional para más recursos
 
