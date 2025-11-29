@@ -35,20 +35,33 @@ export interface AudioStream {
 export interface WebRTCOffer {
   from: string;
   to: string;
-  offer: any; // RTCSessionDescriptionInit del cliente
+  offer: RTCSessionDescriptionInit; // RTCSessionDescriptionInit del cliente
   meetingId: string;
 }
 
 export interface WebRTCAnswer {
   from: string;
   to: string;
-  answer: any; // RTCSessionDescriptionInit del cliente
+  answer: RTCSessionDescriptionInit; // RTCSessionDescriptionInit del cliente
   meetingId: string;
 }
 
 export interface ICECandidate {
   from: string;
   to: string;
-  candidate: any; // RTCIceCandidate del cliente
+  candidate: RTCIceCandidateInit; // RTCIceCandidate del cliente
   meetingId: string;
+}
+
+// Tipos de WebRTC que TypeScript puede no reconocer en Node.js
+export interface RTCSessionDescriptionInit {
+  type: 'offer' | 'answer' | 'pranswer' | 'rollback';
+  sdp?: string;
+}
+
+export interface RTCIceCandidateInit {
+  candidate?: string;
+  sdpMLineIndex?: number | null;
+  sdpMid?: string | null;
+  usernameFragment?: string | null;
 }
