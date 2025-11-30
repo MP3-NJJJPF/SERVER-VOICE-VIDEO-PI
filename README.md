@@ -1,8 +1,8 @@
-# 🎙️ Server Voice PI
+# Server Voice PI
 
 Servidor de transmisión de voz en tiempo real para aplicaciones tipo Meet. Proporciona funcionalidades de WebRTC, Socket.io para comunicación en tiempo real, gestión de reuniones y streams de audio.
 
-## 📋 Características
+## Características
 
 -  **WebRTC P2P Audio Streaming** - Transmisión de audio punto a punto con calidad adaptativa
 -  **Socket.io Real-time Communication** - Comunicación bidireccional en tiempo real
