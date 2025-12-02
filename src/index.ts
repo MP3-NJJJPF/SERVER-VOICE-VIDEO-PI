@@ -76,11 +76,25 @@ app.get('/api/server-info', (req, res) => {
 
 // Ruta para obtener configuración de ICE servers (STUN/TURN)
 app.get('/api/ice-servers', (req, res) => {
+  const iceServers: any[] = [];
+
+  // Agregar servidores STUN
   const stunServers = process.env.STUN_SERVERS
     ? process.env.STUN_SERVERS.split(',').map(url => url.trim())
     : ['stun:stun.l.google.com:19302'];
 
-  const iceServers = stunServers.map(url => ({ urls: url }));
+  stunServers.forEach(url => {
+    iceServers.push({ urls: url });
+  });
+
+  // Agregar servidores TURN si están configurados
+  if (process.env.TURN_SERVER && process.env.TURN_USERNAME && process.env.TURN_PASSWORD) {
+    iceServers.push({
+      urls: process.env.TURN_SERVER,
+      username: process.env.TURN_USERNAME,
+      credential: process.env.TURN_PASSWORD,
+    });
+  }
 
   res.json({
     iceServers,
