@@ -13,7 +13,12 @@ dotenv.config();
 // Configurar orígenes permitidos para CORS
 const allowedOrigins = process.env.SOCKET_CORS
   ? process.env.SOCKET_CORS.split(',').map(origin => origin.trim())
-  : ['http://localhost:3000'];
+  : [
+      'http://localhost:3000',
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175'
+    ];
 
 const app = express();
 const httpServer = createServer(app);
@@ -25,6 +30,8 @@ const io = new SocketIOServer(httpServer, {
   },
 });
 
+console.log('🌐 CORS habilitado para:', allowedOrigins);
+
 // Inicializar manejador de Socket.io
 new SocketIOHandler(io);
 
@@ -34,12 +41,25 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Permitir peticiones sin origin (como Postman)
-      if (!origin) return callback(null, true);
+      console.log('🌐 Request from origin:', origin);
+      
+      // Permitir peticiones sin origin (como Postman, apps móviles)
+      if (!origin) {
+        console.log('✅ Allowing request without origin');
+        return callback(null, true);
+      }
+      
       if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        console.log('✅ Origin allowed:', origin);
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        console.warn('⚠️ Origin not allowed:', origin);
+        // En desarrollo, permitir de todos modos para debugging
+        if (process.env.NODE_ENV === 'development') {
+          callback(null, true);
+        } else {
+          callback(new Error('Not allowed by CORS'));
+        }
       }
     },
     credentials: true,
@@ -76,30 +96,50 @@ app.get('/api/server-info', (req, res) => {
 
 // Ruta para obtener configuración de ICE servers (STUN/TURN)
 app.get('/api/ice-servers', (req, res) => {
-  const iceServers: any[] = [];
+  try {
+    const iceServers: any[] = [];
 
-  // Agregar servidores STUN
-  const stunServers = process.env.STUN_SERVERS
-    ? process.env.STUN_SERVERS.split(',').map(url => url.trim())
-    : ['stun:stun.l.google.com:19302'];
+    // Agregar servidores STUN
+    const stunServers = process.env.STUN_SERVERS
+      ? process.env.STUN_SERVERS.split(',').map(url => url.trim())
+      : ['stun:stun.l.google.com:19302'];
 
-  stunServers.forEach(url => {
-    iceServers.push({ urls: url });
-  });
+    stunServers.forEach(url => {
+      iceServers.push({ urls: url });
+    });
 
-  // Agregar servidores TURN si están configurados
-  if (process.env.TURN_SERVER && process.env.TURN_USERNAME && process.env.TURN_PASSWORD) {
-    iceServers.push({
-      urls: process.env.TURN_SERVER,
-      username: process.env.TURN_USERNAME,
-      credential: process.env.TURN_PASSWORD,
+    console.log('🔧 STUN servers configured:', stunServers.length);
+
+    // Agregar servidores TURN si están configurados
+    if (process.env.TURN_SERVER && process.env.TURN_USERNAME && process.env.TURN_PASSWORD) {
+      const turnConfig = {
+        urls: process.env.TURN_SERVER,
+        username: process.env.TURN_USERNAME,
+        credential: process.env.TURN_PASSWORD,
+      };
+      iceServers.push(turnConfig);
+      console.log('🔧 TURN server configured:', process.env.TURN_SERVER);
+    } else {
+      console.warn('⚠️ TURN server credentials not found in environment variables');
+      console.warn('   TURN_SERVER:', process.env.TURN_SERVER ? 'SET' : 'NOT SET');
+      console.warn('   TURN_USERNAME:', process.env.TURN_USERNAME ? 'SET' : 'NOT SET');
+      console.warn('   TURN_PASSWORD:', process.env.TURN_PASSWORD ? 'SET' : 'NOT SET');
+    }
+
+    console.log('✅ Returning', iceServers.length, 'ICE servers');
+
+    res.json({
+      iceServers,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('❌ Error getting ICE servers:', error);
+    res.status(500).json({
+      error: 'Failed to get ICE servers',
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+      timestamp: new Date().toISOString(),
     });
   }
-
-  res.json({
-    iceServers,
-    timestamp: new Date().toISOString(),
-  });
 });
 
 // Ruta para estadísticas del servidor

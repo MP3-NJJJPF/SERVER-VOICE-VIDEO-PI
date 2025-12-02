@@ -110,24 +110,45 @@ class SocketIOHandler {
     // Unir el socket a una sala de Socket.io
     socket.join(`meeting-${meetingId}`);
 
-    console.log(`${userId} (${userName || 'Sin nombre'}) se unió a la reunión ${meetingId}`);
+    console.log(`✅ ${userId} (${userName || 'Sin nombre'}) se unió a la reunión ${meetingId}`);
+
+    // Obtener lista de usuarios ya en la sala (antes de que este se una)
+    const roomSockets = this.io.sockets.adapter.rooms.get(`meeting-${meetingId}`) || new Set();
+    const existingUsers: any[] = [];
+    
+    // Recopilar información de usuarios existentes
+    for (const [existingUserId, sockets] of this.userSockets.entries()) {
+      if (existingUserId !== userId) {
+        for (const socketId of sockets) {
+          if (roomSockets.has(socketId)) {
+            existingUsers.push({
+              userId: existingUserId,
+              socketId: socketId,
+              name: existingUserId, // Aquí podrías guardar el nombre en un Map si lo necesitas
+            });
+            break; // Solo necesitamos un socket por usuario
+          }
+        }
+      }
+    }
+
+    // Enviar a este usuario la lista de participantes existentes
+    if (existingUsers.length > 0) {
+      console.log(`📋 Enviando ${existingUsers.length} usuarios existentes a ${userId}`);
+      existingUsers.forEach(user => {
+        socket.emit('user-joined', {
+          userId: user.userId,
+          socketId: user.socketId,
+          name: user.name,
+        });
+      });
+    }
 
     // Notificar a otros usuarios que un nuevo usuario se unió
     socket.to(`meeting-${meetingId}`).emit('user-joined', {
       userId,
       socketId: socket.id,
       name: userName || userId,
-      message: `${userName || userId} se unió a la reunión`,
-    });
-
-    // Enviar lista de usuarios activos al nuevo usuario
-    const activeUsers = Array.from(
-      this.io.sockets.adapter.rooms.get(`meeting-${meetingId}`) || []
-    );
-    
-    socket.emit('meeting-users', {
-      users: activeUsers,
-      count: activeUsers.length,
     });
   }
 
