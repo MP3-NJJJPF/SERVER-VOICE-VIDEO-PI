@@ -136,19 +136,33 @@ class SocketIOHandler {
     if (existingUsers.length > 0) {
       console.log(`📋 Enviando ${existingUsers.length} usuarios existentes a ${userId}`);
       existingUsers.forEach(user => {
+        // El usuario con userId lexicográficamente MENOR debe iniciar la conexión
+        const shouldInitiate = userId < user.userId;
         socket.emit('user-joined', {
           userId: user.userId,
           socketId: user.socketId,
           name: user.name,
+          shouldInitiate, // ✅ Indica si ESTE usuario debe crear el offer
         });
+        console.log(`   ${shouldInitiate ? '🟢 DEBE' : '🔴 NO debe'} iniciar offer con ${user.userId}`);
       });
     }
 
     // Notificar a otros usuarios que un nuevo usuario se unió
-    socket.to(`meeting-${meetingId}`).emit('user-joined', {
-      userId,
-      socketId: socket.id,
-      name: userName || userId,
+    // El nuevo usuario debe iniciar solo si su userId es menor
+    const roomUsers = Array.from(this.userSockets.keys()).filter(id => id !== userId);
+    roomUsers.forEach(existingUserId => {
+      const shouldInitiate = existingUserId < userId;
+      const targetSockets = this.userSockets.get(existingUserId) || [];
+      targetSockets.forEach(targetSocketId => {
+        this.io.to(targetSocketId).emit('user-joined', {
+          userId,
+          socketId: socket.id,
+          name: userName || userId,
+          shouldInitiate, // ✅ Indica si ESTE usuario existente debe crear el offer
+        });
+      });
+      console.log(`   Notificando a ${existingUserId}: ${shouldInitiate ? '🟢 DEBE' : '🔴 NO debe'} iniciar offer con ${userId}`);
     });
   }
 
@@ -191,16 +205,18 @@ class SocketIOHandler {
   private handleWebRTCOffer(socket: Socket, data: WebRTCOffer): void {
     const targetSockets = this.userSockets.get(data.to) || [];
 
-    targetSockets.forEach((targetSocketId) => {
-      this.io.to(targetSocketId).emit('webrtc-offer', {
-        from: data.from,
-        to: data.to,
-        offer: data.offer,
-        meetingId: data.meetingId,
-      });
-    });
+    if (targetSockets.length === 0) {
+      console.error(`🔴 [OFFER] Socket no encontrado: ${data.to}`);
+      return;
+    }
 
-    console.log(`WebRTC Offer de ${data.from} para ${data.to}`);
+    console.log(`[OFFER] ${data.from} → ${data.to}, SDP length: ${data.offer?.sdp?.length || 0}`);
+
+    targetSockets.forEach((targetSocketId) => {
+      // ✅ RELAY PURO: Enviar el objeto original sin modificar
+      this.io.to(targetSocketId).emit('webrtc-offer', data);
+      console.log(`[OFFER] ✅ Retransmitido a socket ${targetSocketId}`);
+    });
   }
 
   /**
@@ -209,16 +225,18 @@ class SocketIOHandler {
   private handleWebRTCAnswer(socket: Socket, data: WebRTCAnswer): void {
     const targetSockets = this.userSockets.get(data.to) || [];
 
-    targetSockets.forEach((targetSocketId) => {
-      this.io.to(targetSocketId).emit('webrtc-answer', {
-        from: data.from,
-        to: data.to,
-        answer: data.answer,
-        meetingId: data.meetingId,
-      });
-    });
+    if (targetSockets.length === 0) {
+      console.error(`🔴 [ANSWER] Socket no encontrado: ${data.to}`);
+      return;
+    }
 
-    console.log(`WebRTC Answer de ${data.from} para ${data.to}`);
+    console.log(`[ANSWER] ${data.from} → ${data.to}, SDP length: ${data.answer?.sdp?.length || 0}`);
+
+    targetSockets.forEach((targetSocketId) => {
+      // ✅ RELAY PURO: Enviar el objeto original sin modificar
+      this.io.to(targetSocketId).emit('webrtc-answer', data);
+      console.log(`[ANSWER] ✅ Retransmitido a socket ${targetSocketId}`);
+    });
   }
 
   /**
@@ -227,16 +245,15 @@ class SocketIOHandler {
   private handleICECandidate(socket: Socket, data: ICECandidate): void {
     const targetSockets = this.userSockets.get(data.to) || [];
 
-    targetSockets.forEach((targetSocketId) => {
-      this.io.to(targetSocketId).emit('ice-candidate', {
-        from: data.from,
-        to: data.to,
-        candidate: data.candidate,
-        meetingId: data.meetingId,
-      });
-    });
+    if (targetSockets.length === 0) {
+      // Silenciar log para ICE (demasiados candidatos)
+      return;
+    }
 
-    console.log(`ICE Candidate de ${data.from} para ${data.to}`);
+    targetSockets.forEach((targetSocketId) => {
+      // ✅ RELAY PURO: Enviar el objeto original sin modificar
+      this.io.to(targetSocketId).emit('ice-candidate', data);
+    });
   }
 
   /**
