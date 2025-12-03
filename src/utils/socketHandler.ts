@@ -250,16 +250,20 @@ class SocketIOHandler {
    * Manejar ICE Candidate
    */
   private handleICECandidate(socket: Socket, data: ICECandidate): void {
+    // ✅ LOG TEMPORAL: Ver si llegan ICE candidates
+    console.log(`[ICE] 📡 Received ICE candidate from ${data.from} to ${data.to}`);
+    
     const targetSockets = this.userSockets.get(data.to) || [];
 
     if (targetSockets.length === 0) {
-      // Silenciar log para ICE (demasiados candidatos)
+      console.error(`🔴 [ICE] Socket no encontrado: ${data.to}`);
       return;
     }
 
     targetSockets.forEach((targetSocketId) => {
       // ✅ RELAY PURO: Enviar el objeto original sin modificar
       this.io.to(targetSocketId).emit('ice-candidate', data);
+      console.log(`[ICE] ✅ Retransmitido a socket ${targetSocketId}`);
     });
   }
 
