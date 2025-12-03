@@ -8,6 +8,8 @@ class SocketIOHandler {
   private userSockets: Map<string, string[]> = new Map();
   // Map para mantener track de meetings por socket ID
   private socketMeetings: Map<string, string> = new Map();
+  // Map para almacenar nombres de usuarios
+  private userNames: Map<string, string> = new Map();
 
   constructor(io: SocketIOServer) {
     this.io = io;
@@ -100,6 +102,11 @@ class SocketIOHandler {
   ): void {
     const { userId, meetingId, userName } = data;
 
+    // Guardar el nombre del usuario
+    if (userName) {
+      this.userNames.set(userId, userName);
+    }
+
     // Registrar el socket del usuario
     if (!this.userSockets.has(userId)) {
       this.userSockets.set(userId, []);
@@ -124,7 +131,7 @@ class SocketIOHandler {
             existingUsers.push({
               userId: existingUserId,
               socketId: socketId,
-              name: existingUserId, // Aquí podrías guardar el nombre en un Map si lo necesitas
+              name: this.userNames.get(existingUserId) || existingUserId,
             });
             break; // Solo necesitamos un socket por usuario
           }
