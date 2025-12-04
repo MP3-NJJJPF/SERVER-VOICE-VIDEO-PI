@@ -4,8 +4,11 @@ import meetingService from '../services/meetingService';
 import audioService from '../services/audioService';
 
 /**
- * Crear una nueva reunión de audio
- * POST /api/meetings
+ * Create a new audio meeting
+ * @route POST /api/meetings
+ * @param {AuthRequest} req - Express request with authenticated user
+ * @param {Response} res - Express response
+ * @returns {Promise<void>}
  */
 export const createMeeting = async (
   req: AuthRequest,
@@ -16,12 +19,12 @@ export const createMeeting = async (
     const userId = req.user?.uid;
 
     if (!userId) {
-      res.status(401).json({ error: 'Usuario no autenticado' });
+      res.status(401).json({ error: 'User not authenticated' });
       return;
     }
 
     if (!name) {
-      res.status(400).json({ error: 'El nombre de la reunión es requerido' });
+      res.status(400).json({ error: 'Meeting name is required' });
       return;
     }
 
@@ -33,14 +36,17 @@ export const createMeeting = async (
 
     res.status(201).json({ success: true, meeting });
   } catch (error) {
-    console.error('❌ Error creando reunión:', error);
-    res.status(500).json({ error: 'Error creando la reunión' });
+    console.error('❌ Error creating meeting:', error);
+    res.status(500).json({ error: 'Error creating meeting' });
   }
 };
 
 /**
- * Obtener detalles de una reunión
- * GET /api/meetings/:meetingId
+ * Get meeting details
+ * @route GET /api/meetings/:meetingId
+ * @param {AuthRequest} req - Express request with meeting ID in params
+ * @param {Response} res - Express response
+ * @returns {Promise<void>}
  */
 export const getMeeting = async (
   req: AuthRequest,
@@ -51,20 +57,23 @@ export const getMeeting = async (
 
     const meeting = await meetingService.getMeeting(meetingId);
     if (!meeting) {
-      res.status(404).json({ error: 'Reunión no encontrada' });
+      res.status(404).json({ error: 'Meeting not found' });
       return;
     }
 
     res.json({ success: true, meeting });
   } catch (error) {
-    console.error('❌ Error obteniendo reunión:', error);
-    res.status(500).json({ error: 'Error obteniendo la reunión' });
+    console.error('❌ Error getting meeting:', error);
+    res.status(500).json({ error: 'Error getting meeting' });
   }
 };
 
 /**
- * Unirse a una reunión
- * POST /api/meetings/:meetingId/join
+ * Join a meeting
+ * @route POST /api/meetings/:meetingId/join
+ * @param {AuthRequest} req - Express request with meeting ID and authenticated user
+ * @param {Response} res - Express response
+ * @returns {Promise<void>}
  */
 export const joinMeeting = async (
   req: AuthRequest,
@@ -75,40 +84,43 @@ export const joinMeeting = async (
     const userId = req.user?.uid;
 
     if (!userId) {
-      res.status(401).json({ error: 'Usuario no autenticado' });
+      res.status(401).json({ error: 'User not authenticated' });
       return;
     }
 
     const meeting = await meetingService.getMeeting(meetingId);
     if (!meeting) {
-      res.status(404).json({ error: 'Reunión no encontrada' });
+      res.status(404).json({ error: 'Meeting not found' });
       return;
     }
 
     if (!meeting.isActive) {
-      res.status(410).json({ error: 'La reunión ha finalizado' });
+      res.status(410).json({ error: 'Meeting has ended' });
       return;
     }
 
     const added = await meetingService.addParticipant(meetingId, userId);
     if (!added) {
-      res.status(400).json({ error: 'No se pudo unir a la reunión' });
+      res.status(400).json({ error: 'Could not join meeting' });
       return;
     }
 
-    // Crear stream de audio
+    // Create audio stream
     const audioStream = await audioService.createAudioStream(meetingId, userId, 'high');
 
     res.json({ success: true, meeting, audioStream });
   } catch (error) {
-    console.error('❌ Error uniéndose a reunión:', error);
-    res.status(500).json({ error: 'Error uniéndose a la reunión' });
+    console.error('❌ Error joining meeting:', error);
+    res.status(500).json({ error: 'Error joining meeting' });
   }
 };
 
 /**
- * Salir de una reunión
- * POST /api/meetings/:meetingId/leave
+ * Leave a meeting
+ * @route POST /api/meetings/:meetingId/leave
+ * @param {AuthRequest} req - Express request with meeting ID and authenticated user
+ * @param {Response} res - Express response
+ * @returns {Promise<void>}
  */
 export const leaveMeeting = async (
   req: AuthRequest,
@@ -119,22 +131,26 @@ export const leaveMeeting = async (
     const userId = req.user?.uid;
 
     if (!userId) {
-      res.status(401).json({ error: 'Usuario no autenticado' });
+      res.status(401).json({ error: 'User not authenticated' });
       return;
     }
 
     await meetingService.removeParticipant(meetingId, userId);
 
-    res.json({ success: true, message: 'Salido de la reunión' });
+    res.json({ success: true, message: 'Left meeting' });
   } catch (error) {
-    console.error('❌ Error saliendo de reunión:', error);
-    res.status(500).json({ error: 'Error saliendo de la reunión' });
+    console.error('❌ Error leaving meeting:', error);
+    res.status(500).json({ error: 'Error leaving meeting' });
   }
 };
 
 /**
- * Finalizar una reunión
- * POST /api/meetings/:meetingId/end
+ * End a meeting
+ * @route POST /api/meetings/:meetingId/end
+ * @param {AuthRequest} req - Express request with meeting ID and authenticated user
+ * @param {Response} res - Express response
+ * @returns {Promise<void>}
+ * @description Only the meeting creator can end the meeting
  */
 export const endMeeting = async (
   req: AuthRequest,
@@ -146,28 +162,31 @@ export const endMeeting = async (
 
     const meeting = await meetingService.getMeeting(meetingId);
     if (!meeting) {
-      res.status(404).json({ error: 'Reunión no encontrada' });
+      res.status(404).json({ error: 'Meeting not found' });
       return;
     }
 
-    // Solo el creador puede finalizar
+    // Only the creator can end the meeting
     if (meeting.creatorId !== userId) {
-      res.status(403).json({ error: 'Solo el creador puede finalizar la reunión' });
+      res.status(403).json({ error: 'Only the creator can end the meeting' });
       return;
     }
 
     await meetingService.endMeeting(meetingId);
 
-    res.json({ success: true, message: 'Reunión finalizada' });
+    res.json({ success: true, message: 'Meeting ended' });
   } catch (error) {
-    console.error('❌ Error finalizando reunión:', error);
-    res.status(500).json({ error: 'Error finalizando la reunión' });
+    console.error('❌ Error ending meeting:', error);
+    res.status(500).json({ error: 'Error ending meeting' });
   }
 };
 
 /**
- * Obtener participantes de una reunión
- * GET /api/meetings/:meetingId/participants
+ * Get meeting participants
+ * @route GET /api/meetings/:meetingId/participants
+ * @param {AuthRequest} req - Express request with meeting ID in params
+ * @param {Response} res - Express response
+ * @returns {Promise<void>}
  */
 export const getMeetingParticipants = async (
   req: AuthRequest,
@@ -180,14 +199,17 @@ export const getMeetingParticipants = async (
 
     res.json({ success: true, participants });
   } catch (error) {
-    console.error('❌ Error obteniendo participantes:', error);
-    res.status(500).json({ error: 'Error obteniendo participantes' });
+    console.error('❌ Error getting participants:', error);
+    res.status(500).json({ error: 'Error getting participants' });
   }
 };
 
 /**
- * Obtener reuniones activas
- * GET /api/meetings/active
+ * Get all active meetings
+ * @route GET /api/meetings/active
+ * @param {AuthRequest} req - Express request
+ * @param {Response} res - Express response
+ * @returns {Promise<void>}
  */
 export const getActiveMeetings = async (
   req: AuthRequest,
@@ -198,7 +220,7 @@ export const getActiveMeetings = async (
 
     res.json({ success: true, meetings });
   } catch (error) {
-    console.error('❌ Error obteniendo reuniones activas:', error);
-    res.status(500).json({ error: 'Error obteniendo reuniones' });
+    console.error('❌ Error getting active meetings:', error);
+    res.status(500).json({ error: 'Error getting meetings' });
   }
 };

@@ -2,11 +2,22 @@ import { v4 as uuidv4 } from 'uuid';
 import { Meeting } from '../models/types';
 import { firebaseDb } from '../config/firebase';
 
+/**
+ * Meeting Service
+ * @class MeetingService
+ * @description Manages meeting creation, participants, and lifecycle
+ */
 class MeetingService {
   private meetings: Map<string, Meeting> = new Map();
 
   /**
-   * Crear una nueva reunión de audio
+   * Create a new audio meeting
+   * @param {string} name - Meeting name
+   * @param {string} creatorId - User ID of the meeting creator
+   * @param {number} [maxParticipants=50] - Maximum number of participants allowed
+   * @returns {Promise<Meeting>} The created meeting object
+   * @example
+   * const meeting = await meetingService.createMeeting('Team Call', 'user123', 10);
    */
   async createMeeting(
     name: string,
@@ -43,7 +54,9 @@ class MeetingService {
   }
 
   /**
-   * Obtener una reunión por ID
+   * Get a meeting by ID
+   * @param {string} meetingId - Unique meeting identifier
+   * @returns {Promise<Meeting | null>} Meeting object or null if not found
    */
   async getMeeting(meetingId: string): Promise<Meeting | null> {
     if (this.meetings.has(meetingId)) {
@@ -68,7 +81,10 @@ class MeetingService {
   }
 
   /**
-   * Agregar participante a una reunión
+   * Add a participant to a meeting
+   * @param {string} meetingId - Meeting identifier
+   * @param {string} userId - User ID to add
+   * @returns {Promise<boolean>} True if participant was added successfully
    */
   async addParticipant(meetingId: string, userId: string): Promise<boolean> {
     const meeting = await this.getMeeting(meetingId);
@@ -104,7 +120,11 @@ class MeetingService {
   }
 
   /**
-   * Remover participante de una reunión
+   * Remove a participant from a meeting
+   * @param {string} meetingId - Meeting identifier
+   * @param {string} userId - User ID to remove
+   * @returns {Promise<boolean>} True if participant was removed successfully
+   * @description Automatically ends the meeting if no participants remain
    */
   async removeParticipant(meetingId: string, userId: string): Promise<boolean> {
     const meeting = await this.getMeeting(meetingId);
@@ -134,7 +154,9 @@ class MeetingService {
   }
 
   /**
-   * Finalizar una reunión
+   * End a meeting and mark it as inactive
+   * @param {string} meetingId - Meeting identifier
+   * @returns {Promise<boolean>} True if meeting was ended successfully
    */
   async endMeeting(meetingId: string): Promise<boolean> {
     const meeting = await this.getMeeting(meetingId);
@@ -151,22 +173,25 @@ class MeetingService {
           .doc(meetingId)
           .update({ isActive: false, endedAt: new Date() });
       } catch (error) {
-        console.error('❌ Error finalizando reunión:', error);
+        console.error('❌ Error ending meeting:', error);
       }
     }
-    console.log(`✅ Reunión finalizada: ${meetingId}`);
+    console.log(`✅ Meeting ended: ${meetingId}`);
     return true;
   }
 
   /**
-   * Obtener todas las reuniones activas
+   * Get all active meetings
+   * @returns {Promise<Meeting[]>} Array of active meeting objects
    */
   async getActiveMeetings(): Promise<Meeting[]> {
     return Array.from(this.meetings.values()).filter((m) => m.isActive);
   }
 
   /**
-   * Obtener participantes de una reunión
+   * Get all participants of a meeting
+   * @param {string} meetingId - Meeting identifier
+   * @returns {Promise<string[]>} Array of participant user IDs
    */
   async getMeetingParticipants(meetingId: string): Promise<string[]> {
     const meeting = await this.getMeeting(meetingId);

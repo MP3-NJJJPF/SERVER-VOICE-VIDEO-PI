@@ -49,7 +49,15 @@ app.use(
         return callback(null, true);
       }
       
-      if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      // Normalizar el origin quitando el slash final si existe
+      const normalizedOrigin = origin.endsWith('/') ? origin.slice(0, -1) : origin;
+      
+      // Normalizar los origins permitidos también
+      const normalizedAllowedOrigins = allowedOrigins.map(o => 
+        o.endsWith('/') ? o.slice(0, -1) : o
+      );
+      
+      if (normalizedAllowedOrigins.includes(normalizedOrigin) || allowedOrigins.includes('*')) {
         console.log('✅ Origin allowed:', origin);
         callback(null, true);
       } else {
