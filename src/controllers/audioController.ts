@@ -17,7 +17,7 @@ export const getMeetingAudioStreams = async (
 
     res.json({ success: true, streams });
   } catch (error) {
-    console.error('❌ Error obteniendo streams:', error);
+    console.error('Error obteniendo streams:', error);
     res.status(500).json({ error: 'Error obteniendo streams de audio' });
   }
 };
@@ -41,7 +41,7 @@ export const getAudioStream = async (
 
     res.json({ success: true, stream });
   } catch (error) {
-    console.error('❌ Error obteniendo stream:', error);
+    console.error('Error obteniendo stream:', error);
     res.status(500).json({ error: 'Error obteniendo el stream' });
   }
 };
@@ -65,7 +65,7 @@ export const stopAudioStream = async (
 
     res.json({ success: true, message: 'Stream detenido' });
   } catch (error) {
-    console.error('❌ Error deteniendo stream:', error);
+    console.error('Error deteniendo stream:', error);
     res.status(500).json({ error: 'Error deteniendo el stream' });
   }
 };
@@ -95,7 +95,7 @@ export const setAudioQuality = async (
 
     res.json({ success: true, message: `Calidad ajustada a ${quality}` });
   } catch (error) {
-    console.error('❌ Error ajustando calidad:', error);
+    console.error('Error ajustando calidad:', error);
     res.status(500).json({ error: 'Error ajustando la calidad' });
   }
 };

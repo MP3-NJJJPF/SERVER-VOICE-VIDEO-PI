@@ -48,7 +48,7 @@ export const authMiddleware = async (
   try {
     // If Firebase is not configured, create mock user for development
     if (!firebaseAuth) {
-      console.warn('⚠️  Authentication disabled - using mock user');
+      console.warn('Authentication disabled - using mock user');
       req.user = {
         uid: 'dev-user-123',
         email: 'dev@example.com',
@@ -74,7 +74,7 @@ export const authMiddleware = async (
 
     next();
   } catch (error) {
-    console.error('❌ Error authenticating token:', error);
+    console.error('Error authenticating token:', error);
     res.status(401).json({ error: 'Invalid or expired token' });
   }
 };

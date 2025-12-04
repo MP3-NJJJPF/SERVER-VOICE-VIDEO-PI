@@ -117,7 +117,7 @@ class SocketIOHandler {
     // Unir el socket a una sala de Socket.io
     socket.join(`meeting-${meetingId}`);
 
-    console.log(`✅ ${userId} (${userName || 'Sin nombre'}) se unió a la reunión ${meetingId}`);
+    console.log(`${userId} (${userName || 'Sin nombre'}) se unió a la reunión ${meetingId}`);
 
     // Obtener lista de usuarios ya en la sala (antes de que este se una)
     const roomSockets = this.io.sockets.adapter.rooms.get(`meeting-${meetingId}`) || new Set();
@@ -141,7 +141,7 @@ class SocketIOHandler {
 
     // Enviar a este usuario la lista de participantes existentes
     if (existingUsers.length > 0) {
-      console.log(`📋 Enviando ${existingUsers.length} usuarios existentes a ${userId}`);
+      console.log(`Enviando ${existingUsers.length} usuarios existentes a ${userId}`);
       existingUsers.forEach(user => {
         // El usuario con userId lexicográficamente MENOR debe iniciar la conexión
         const shouldInitiate = userId < user.userId;
@@ -149,9 +149,9 @@ class SocketIOHandler {
           userId: user.userId,
           socketId: user.socketId,
           name: user.name,
-          shouldInitiate, // ✅ Indica si ESTE usuario debe crear el offer
+          shouldInitiate, // Indica si ESTE usuario debe crear el offer
         });
-        console.log(`   ${shouldInitiate ? '🟢 DEBE' : '🔴 NO debe'} iniciar offer con ${user.userId}`);
+        console.log(`   ${shouldInitiate ? 'DEBE' : 'NO debe'} iniciar offer con ${user.userId}`);
       });
     }
 
@@ -166,10 +166,10 @@ class SocketIOHandler {
           userId,
           socketId: socket.id,
           name: userName || userId,
-          shouldInitiate, // ✅ Indica si ESTE usuario existente debe crear el offer
+          shouldInitiate, // Indica si ESTE usuario existente debe crear el offer
         });
       });
-      console.log(`   Notificando a ${existingUserId}: ${shouldInitiate ? '🟢 DEBE' : '🔴 NO debe'} iniciar offer con ${userId}`);
+      console.log(`   Notificando a ${existingUserId}: ${shouldInitiate ? 'DEBE' : 'NO debe'} iniciar offer con ${userId}`);
     });
   }
 
@@ -213,16 +213,16 @@ class SocketIOHandler {
     const targetSockets = this.userSockets.get(data.to) || [];
 
     if (targetSockets.length === 0) {
-      console.error(`🔴 [OFFER] Socket no encontrado: ${data.to}`);
+      console.error(`[OFFER] Socket no encontrado: ${data.to}`);
       return;
     }
 
     console.log(`[OFFER] ${data.from} → ${data.to}, SDP length: ${data.offer?.sdp?.length || 0}`);
 
     targetSockets.forEach((targetSocketId) => {
-      // ✅ RELAY PURO: Enviar el objeto original sin modificar
+      // RELAY PURO: Enviar el objeto original sin modificar
       this.io.to(targetSocketId).emit('webrtc-offer', data);
-      console.log(`[OFFER] ✅ Retransmitido a socket ${targetSocketId}`);
+      console.log(`[OFFER] Retransmitido a socket ${targetSocketId}`);
     });
   }
 
@@ -233,16 +233,16 @@ class SocketIOHandler {
     const targetSockets = this.userSockets.get(data.to) || [];
 
     if (targetSockets.length === 0) {
-      console.error(`🔴 [ANSWER] Socket no encontrado: ${data.to}`);
+      console.error(`[ANSWER] Socket no encontrado: ${data.to}`);
       return;
     }
 
     console.log(`[ANSWER] ${data.from} → ${data.to}, SDP length: ${data.answer?.sdp?.length || 0}`);
 
     targetSockets.forEach((targetSocketId) => {
-      // ✅ RELAY PURO: Enviar el objeto original sin modificar
+      // RELAY PURO: Enviar el objeto original sin modificar
       this.io.to(targetSocketId).emit('webrtc-answer', data);
-      console.log(`[ANSWER] ✅ Retransmitido a socket ${targetSocketId}`);
+      console.log(`[ANSWER] Retransmitido a socket ${targetSocketId}`);
     });
   }
 
@@ -250,20 +250,20 @@ class SocketIOHandler {
    * Manejar ICE Candidate
    */
   private handleICECandidate(socket: Socket, data: ICECandidate): void {
-    // ✅ LOG TEMPORAL: Ver si llegan ICE candidates
-    console.log(`[ICE] 📡 Received ICE candidate from ${data.from} to ${data.to}`);
+    // LOG TEMPORAL: Ver si llegan ICE candidates
+    console.log(`[ICE] Received ICE candidate from ${data.from} to ${data.to}`);
     
     const targetSockets = this.userSockets.get(data.to) || [];
 
     if (targetSockets.length === 0) {
-      console.error(`🔴 [ICE] Socket no encontrado: ${data.to}`);
+      console.error(`[ICE] Socket no encontrado: ${data.to}`);
       return;
     }
 
     targetSockets.forEach((targetSocketId) => {
-      // ✅ RELAY PURO: Enviar el objeto original sin modificar
+      // RELAY PURO: Enviar el objeto original sin modificar
       this.io.to(targetSocketId).emit('ice-candidate', data);
-      console.log(`[ICE] ✅ Retransmitido a socket ${targetSocketId}`);
+      console.log(`[ICE] Retransmitido a socket ${targetSocketId}`);
     });
   }
 

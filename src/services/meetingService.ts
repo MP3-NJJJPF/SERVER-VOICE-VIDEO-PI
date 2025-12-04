@@ -42,12 +42,12 @@ class MeetingService {
     if (firebaseDb) {
       try {
         await firebaseDb.collection('meetings').doc(meetingId).set(meeting);
-        console.log(`✅ Reunión creada y guardada en Firestore: ${meetingId}`);
+        console.log(`Reunión creada y guardada en Firestore: ${meetingId}`);
       } catch (error) {
-        console.error('❌ Error guardando reunión en Firestore:', error);
+        console.error('Error guardando reunión en Firestore:', error);
       }
     } else {
-      console.log(`✅ Reunión creada (solo en memoria): ${meetingId}`);
+      console.log(`Reunión creada (solo en memoria): ${meetingId}`);
     }
 
     return meeting;
@@ -73,7 +73,7 @@ class MeetingService {
           return meeting;
         }
       } catch (error) {
-        console.error('❌ Error obteniendo reunión:', error);
+        console.error('Error obteniendo reunión:', error);
       }
     }
 
@@ -94,7 +94,7 @@ class MeetingService {
       meeting.maxParticipants &&
       meeting.participants.length >= meeting.maxParticipants
     ) {
-      console.warn(`❌ Reunión llena: ${meetingId}`);
+      console.warn(`Reunión llena: ${meetingId}`);
       return false;
     }
 
@@ -109,10 +109,10 @@ class MeetingService {
             .doc(meetingId)
             .update({ participants: meeting.participants });
         } catch (error) {
-          console.error('❌ Error agregando participante:', error);
+          console.error('Error agregando participante:', error);
         }
       }
-      console.log(`✅ Participante agregado: ${userId} a ${meetingId}`);
+      console.log(`Participante agregado: ${userId} a ${meetingId}`);
       return true;
     }
 
@@ -140,7 +140,7 @@ class MeetingService {
           .doc(meetingId)
           .update({ participants: meeting.participants });
       } catch (error) {
-        console.error('❌ Error removiendo participante:', error);
+        console.error('Error removiendo participante:', error);
       }
     }
 
@@ -149,7 +149,7 @@ class MeetingService {
       await this.endMeeting(meetingId);
     }
 
-    console.log(`✅ Participante removido: ${userId} de ${meetingId}`);
+    console.log(`Participante removido: ${userId} de ${meetingId}`);
     return true;
   }
 
@@ -173,10 +173,10 @@ class MeetingService {
           .doc(meetingId)
           .update({ isActive: false, endedAt: new Date() });
       } catch (error) {
-        console.error('❌ Error ending meeting:', error);
+        console.error('Error ending meeting:', error);
       }
     }
-    console.log(`✅ Meeting ended: ${meetingId}`);
+    console.log(`Meeting ended: ${meetingId}`);
     return true;
   }
 

@@ -36,7 +36,7 @@ export const createMeeting = async (
 
     res.status(201).json({ success: true, meeting });
   } catch (error) {
-    console.error('❌ Error creating meeting:', error);
+    console.error('Error creating meeting:', error);
     res.status(500).json({ error: 'Error creating meeting' });
   }
 };
@@ -63,7 +63,7 @@ export const getMeeting = async (
 
     res.json({ success: true, meeting });
   } catch (error) {
-    console.error('❌ Error getting meeting:', error);
+    console.error('Error getting meeting:', error);
     res.status(500).json({ error: 'Error getting meeting' });
   }
 };
@@ -110,7 +110,7 @@ export const joinMeeting = async (
 
     res.json({ success: true, meeting, audioStream });
   } catch (error) {
-    console.error('❌ Error joining meeting:', error);
+    console.error('Error joining meeting:', error);
     res.status(500).json({ error: 'Error joining meeting' });
   }
 };
@@ -139,7 +139,7 @@ export const leaveMeeting = async (
 
     res.json({ success: true, message: 'Left meeting' });
   } catch (error) {
-    console.error('❌ Error leaving meeting:', error);
+    console.error('Error leaving meeting:', error);
     res.status(500).json({ error: 'Error leaving meeting' });
   }
 };
@@ -176,7 +176,7 @@ export const endMeeting = async (
 
     res.json({ success: true, message: 'Meeting ended' });
   } catch (error) {
-    console.error('❌ Error ending meeting:', error);
+    console.error('Error ending meeting:', error);
     res.status(500).json({ error: 'Error ending meeting' });
   }
 };
@@ -199,7 +199,7 @@ export const getMeetingParticipants = async (
 
     res.json({ success: true, participants });
   } catch (error) {
-    console.error('❌ Error getting participants:', error);
+    console.error('Error getting participants:', error);
     res.status(500).json({ error: 'Error getting participants' });
   }
 };
@@ -220,7 +220,7 @@ export const getActiveMeetings = async (
 
     res.json({ success: true, meetings });
   } catch (error) {
-    console.error('❌ Error getting active meetings:', error);
+    console.error('Error getting active meetings:', error);
     res.status(500).json({ error: 'Error getting meetings' });
   }
 };

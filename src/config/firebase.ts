@@ -35,10 +35,10 @@ if (googleAppCredentials) {
       credential: admin.credential.cert(serviceAccount),
     });
     
-    console.log('✅ Firebase Admin inicializado correctamente (usando GOOGLE_APPLICATION_CREDENTIALS)');
+    console.log('Firebase Admin inicializado correctamente (usando GOOGLE_APPLICATION_CREDENTIALS)');
     firebaseInitialized = true;
   } catch (error) {
-    console.error('❌ Error inicializando Firebase Admin con GOOGLE_APPLICATION_CREDENTIALS:', error);
+    console.error('Error inicializando Firebase Admin con GOOGLE_APPLICATION_CREDENTIALS:', error);
   }
 } else if (hasIndividualCredentials) {
   // Initialize Firebase Admin with individual credentials
@@ -52,13 +52,13 @@ if (googleAppCredentials) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
     });
-    console.log('✅ Firebase Admin inicializado correctamente (usando credenciales individuales)');
+    console.log('Firebase Admin inicializado correctamente (usando credenciales individuales)');
     firebaseInitialized = true;
   } catch (error) {
-    console.error('❌ Error inicializando Firebase Admin con credenciales individuales:', error);
+    console.error('Error inicializando Firebase Admin con credenciales individuales:', error);
   }
 } else {
-  console.warn('⚠️  Firebase not configured - Set environment variables in .env to enable authentication');
+  console.warn('Firebase not configured - Set environment variables in .env to enable authentication');
   console.warn('   You can use GOOGLE_APPLICATION_CREDENTIALS (complete JSON)');
   console.warn('   Or FIREBASE_PROJECT_ID, FIREBASE_PRIVATE_KEY, FIREBASE_CLIENT_EMAIL (individual)');
 }

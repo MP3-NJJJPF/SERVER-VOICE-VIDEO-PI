@@ -32,10 +32,10 @@ class AudioService {
           .doc(streamId)
           .set(stream);
       } catch (error) {
-        console.error('❌ Error creando stream:', error);
+        console.error('Error creando stream:', error);
       }
     }
-    console.log(`✅ Stream de audio creado: ${streamId}`);
+    console.log(`Stream de audio creado: ${streamId}`);
 
     return stream;
   }
@@ -57,7 +57,7 @@ class AudioService {
           return stream;
         }
       } catch (error) {
-        console.error('❌ Error obteniendo stream:', error);
+        console.error('Error obteniendo stream:', error);
       }
     }
 
@@ -91,10 +91,10 @@ class AudioService {
           .doc(streamId)
           .update({ isActive: false, endedAt: new Date() });
       } catch (error) {
-        console.error('❌ Error deteniendo stream:', error);
+        console.error('Error deteniendo stream:', error);
       }
     }
-    console.log(`✅ Stream detenido: ${streamId}`);
+    console.log(`Stream detenido: ${streamId}`);
     return true;
   }
 
@@ -115,10 +115,10 @@ class AudioService {
       try {
         await firebaseDb.collection('audioStreams').doc(streamId).update({ quality });
       } catch (error) {
-        console.error('❌ Error ajustando calidad:', error);
+        console.error('Error ajustando calidad:', error);
       }
     }
-    console.log(`✅ Calidad de audio ajustada: ${quality} para ${streamId}`);
+    console.log(`Calidad de audio ajustada: ${quality} para ${streamId}`);
     return true;
   }
 
@@ -141,7 +141,7 @@ class AudioService {
       }
     }
 
-    console.log(`🧹 ${count} streams inactivos limpiados`);
+    console.log(`${count} streams inactivos limpiados`);
     return count;
   }
 }

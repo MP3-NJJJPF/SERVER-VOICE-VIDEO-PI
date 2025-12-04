@@ -30,7 +30,7 @@ const io = new SocketIOServer(httpServer, {
   },
 });
 
-console.log('🌐 CORS habilitado para:', allowedOrigins);
+console.log('CORS habilitado para:', allowedOrigins);
 
 // Inicializar manejador de Socket.io
 new SocketIOHandler(io);
@@ -41,11 +41,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: (origin, callback) => {
-      console.log('🌐 Request from origin:', origin);
+      console.log('Request from origin:', origin);
       
       // Permitir peticiones sin origin (como Postman, apps móviles)
       if (!origin) {
-        console.log('✅ Allowing request without origin');
+        console.log('Allowing request without origin');
         return callback(null, true);
       }
       
@@ -58,10 +58,10 @@ app.use(
       );
       
       if (normalizedAllowedOrigins.includes(normalizedOrigin) || allowedOrigins.includes('*')) {
-        console.log('✅ Origin allowed:', origin);
+        console.log('Origin allowed:', origin);
         callback(null, true);
       } else {
-        console.warn('⚠️ Origin not allowed:', origin);
+        console.warn('Origin not allowed:', origin);
         // En desarrollo, permitir de todos modos para debugging
         if (process.env.NODE_ENV === 'development') {
           callback(null, true);
@@ -116,7 +116,7 @@ app.get('/api/ice-servers', (req, res) => {
       iceServers.push({ urls: url });
     });
 
-    console.log('🔧 STUN servers configured:', stunServers.length);
+    console.log('STUN servers configured:', stunServers.length);
 
     // Agregar servidores TURN si están configurados
     if (process.env.TURN_SERVER && process.env.TURN_USERNAME && process.env.TURN_PASSWORD) {
@@ -126,22 +126,22 @@ app.get('/api/ice-servers', (req, res) => {
         credential: process.env.TURN_PASSWORD,
       };
       iceServers.push(turnConfig);
-      console.log('🔧 TURN server configured:', process.env.TURN_SERVER);
+      console.log('TURN server configured:', process.env.TURN_SERVER);
     } else {
-      console.warn('⚠️ TURN server credentials not found in environment variables');
+      console.warn('TURN server credentials not found in environment variables');
       console.warn('   TURN_SERVER:', process.env.TURN_SERVER ? 'SET' : 'NOT SET');
       console.warn('   TURN_USERNAME:', process.env.TURN_USERNAME ? 'SET' : 'NOT SET');
       console.warn('   TURN_PASSWORD:', process.env.TURN_PASSWORD ? 'SET' : 'NOT SET');
     }
 
-    console.log('✅ Returning', iceServers.length, 'ICE servers');
+    console.log('Returning', iceServers.length, 'ICE servers');
 
     res.json({
       iceServers,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
-    console.error('❌ Error getting ICE servers:', error);
+    console.error('Error getting ICE servers:', error);
     res.status(500).json({
       error: 'Failed to get ICE servers',
       iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
@@ -169,7 +169,7 @@ app.use((req, res) => {
 
 // Manejo global de errores
 app.use((err: any, req: any, res: any, next: any) => {
-  console.error('❌ Error no manejado:', err);
+  console.error('Error no manejado:', err);
   res.status(err.status || 500).json({
     error: err.message || 'Error interno del servidor',
   });
