@@ -1,6 +1,5 @@
 import { Socket, Server as SocketIOServer } from 'socket.io';
 import { WebRTCOffer, WebRTCAnswer, ICECandidate } from '../models/types';
-import meetingService from '../services/meetingService';
 
 class SocketIOHandler {
   private io: SocketIOServer;
@@ -58,6 +57,15 @@ class SocketIOHandler {
         socket.to(`meeting-${data.meetingId}`).emit('audio-state-changed', {
           userId: data.userId,
           isMuted: data.isMuted,
+        });
+      });
+
+      // Evento: Toggle video (activar/desactivar cámara)
+      socket.on('toggle-video', (data: { userId: string; meetingId: string; isVideoOff: boolean }) => {
+        console.log('toggle-video recibido:', data);
+        socket.to(`meeting-${data.meetingId}`).emit('video-state-changed', {
+          userId: data.userId,
+          isVideoOff: data.isVideoOff,
         });
       });
 

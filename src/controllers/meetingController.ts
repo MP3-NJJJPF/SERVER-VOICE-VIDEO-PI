@@ -2,9 +2,10 @@ import { Response } from 'express';
 import { AuthRequest } from '../middlewares/auth';
 import meetingService from '../services/meetingService';
 import audioService from '../services/audioService';
+import videoService from '../services/videoService';
 
 /**
- * Create a new audio meeting
+ * Create a new audio/video meeting
  * @route POST /api/meetings
  * @param {AuthRequest} req - Express request with authenticated user
  * @param {Response} res - Express response
@@ -107,8 +108,11 @@ export const joinMeeting = async (
 
     // Create audio stream
     const audioStream = await audioService.createAudioStream(meetingId, userId, 'high');
+    
+    // Create video stream
+    const videoStream = await videoService.createVideoStream(meetingId, userId, 'high');
 
-    res.json({ success: true, meeting, audioStream });
+    res.json({ success: true, meeting, audioStream, videoStream });
   } catch (error) {
     console.error('Error joining meeting:', error);
     res.status(500).json({ error: 'Error joining meeting' });

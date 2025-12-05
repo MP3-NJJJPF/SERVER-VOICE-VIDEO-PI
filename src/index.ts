@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import SocketIOHandler from './utils/socketHandler';
 import meetingRoutes from './routes/meetings';
 import audioRoutes from './routes/audio';
+import videoRoutes from './routes/video';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -89,14 +90,15 @@ app.get('/health', (req, res) => {
 // Rutas de la API
 app.use('/api/meetings', meetingRoutes);
 app.use('/api/audio', audioRoutes);
-
+app.use('/api/video', videoRoutes);
 // Ruta para obtener información del servidor
 app.get('/api/server-info', (req, res) => {
   res.json({
-    name: 'Voice Server',
+    name: 'Voice & Video Server',
     version: '1.0.0',
-    description: 'Servidor de transmisión de voz en tiempo real',
+    description: 'Servidor de transmisión de voz y video en tiempo real',
     webrtcSupported: true,
+    features: ['webrtc', 'socket.io', 'audio-streaming', 'video-streaming', 'meeting-management'],
     features: ['webrtc', 'socket.io', 'audio-streaming', 'meeting-management'],
     environment: process.env.NODE_ENV,
   });

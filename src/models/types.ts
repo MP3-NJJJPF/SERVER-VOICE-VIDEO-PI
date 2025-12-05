@@ -61,6 +61,21 @@ export interface AudioStream {
 }
 
 /**
+ * Video stream entity interface
+ * @interface VideoStream
+ */
+export interface VideoStream {
+  meetingId: string;
+  userId: string;
+  streamId: string;
+  isActive: boolean;
+  quality: 'low' | 'medium' | 'high' | 'hd';
+  resolution?: string; // e.g., '640x480', '1280x720', '1920x1080'
+  startedAt: Date;
+  endedAt?: Date;
+}
+
+/**
  * WebRTC Offer interface for signaling
  * @interface WebRTCOffer
  * @description Server only handles signaling, doesn't create actual connections

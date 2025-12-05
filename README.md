@@ -1,17 +1,19 @@
-# Server Voice PI
+# Server Voice & Video PI
 
-Servidor de transmisión de voz en tiempo real para aplicaciones tipo Meet. Proporciona funcionalidades de WebRTC, Socket.io para comunicación en tiempo real, gestión de reuniones y streams de audio.
+Servidor de transmisión de **audio y video** en tiempo real para aplicaciones tipo Meet/Zoom. Proporciona funcionalidades completas de WebRTC, Socket.io para comunicación en tiempo real, gestión de reuniones y streams de audio y video.
 
 ## Características
 
--  **WebRTC P2P Audio Streaming** - Transmisión de audio punto a punto con calidad adaptativa
--  **Socket.io Real-time Communication** - Comunicación bidireccional en tiempo real
--  **Meeting Management** - Crear y gestionar reuniones de audio
--  **Firebase Authentication** - Autenticación segura con Firebase
--  **Audio Quality Control** - Ajuste dinámico de calidad (low, medium, high)
--  **STUN Server Support** - Soporte para servidores STUN
--  **TypeScript** - Código tipado y seguro
--  **Listo para integración de video** - Extensible para agregar funcionalidad de video
+- **WebRTC P2P Audio & Video Streaming** - Transmisión de audio y video punto a punto con calidad adaptativa
+- **Socket.io Real-time Communication** - Comunicación bidireccional en tiempo real
+- **Meeting Management** - Crear y gestionar reuniones de audio y video
+- **Firebase Authentication** - Autenticación segura con Firebase
+- **Audio Quality Control** - Ajuste dinámico de calidad de audio (low, medium, high)
+- **Video Quality Control** - Ajuste dinámico de calidad de video (low, medium, high, hd)
+- **Video Resolution Support** - Resoluciones desde 320x240 hasta 1920x1080
+- **STUN/TURN Server Support** - Soporte para servidores STUN y TURN
+- **TypeScript** - Código tipado y seguro
+- **Arquitectura escalable** - Servicios separados para audio y video
 
 2. **Instalar dependencias**
 
@@ -47,7 +49,7 @@ SOCKET_CORS=http://localhost:3000
 VIDEO_SERVER_URL=http://localhost:3002
 ```
 
-##  Ejecución
+## Ejecución
 
 ### Desarrollo (con hot reload)
 
@@ -55,7 +57,7 @@ VIDEO_SERVER_URL=http://localhost:3002
 npm run dev
 ```
 
-##  API Endpoints
+## API Endpoints
 
 ### Reuniones
 
@@ -126,6 +128,13 @@ Response: 200
     "userId": "user-uid",
     "streamId": "stream-uuid",
     "quality": "high"
+  },
+  "videoStream": {
+    "meetingId": "meeting-uuid",
+    "userId": "user-uid",
+    "streamId": "video-stream-uuid",
+    "quality": "high",
+    "resolution": "1280x720"
   }
 }
 ```
@@ -215,8 +224,69 @@ Response: 200
 }
 ```
 
+### Video Streams
 
-##  Pruebas
+#### Obtener streams de video activos de una reunión
+
+```http
+GET /api/video/meetings/:meetingId/streams
+Authorization: Bearer <firebase-token>
+
+Response: 200
+{
+  "success": true,
+  "streams": [
+    {
+      "meetingId": "meeting-uuid",
+      "userId": "user-uid",
+      "streamId": "video-stream-uuid",
+      "quality": "high",
+      "resolution": "1280x720",
+      "isActive": true
+    }
+  ]
+}
+```
+
+#### Cambiar calidad de video
+
+```http
+PUT /api/video/streams/:streamId/quality
+Authorization: Bearer <firebase-token>
+Content-Type: application/json
+
+{
+  "quality": "hd"
+}
+
+Response: 200
+{
+  "success": true,
+  "message": "Calidad de video ajustada a hd"
+}
+```
+
+**Calidades disponibles:**
+
+- `low` - 320x240 (conexiones lentas)
+- `medium` - 640x480 (estándar SD)
+- `high` - 1280x720 (HD)
+- `hd` - 1920x1080 (Full HD)
+
+#### Detener stream de video
+
+```http
+POST /api/video/streams/:streamId/stop
+Authorization: Bearer <firebase-token>
+
+Response: 200
+{
+  "success": true,
+  "message": "Video stream detenido"
+}
+```
+
+## Pruebas
 
 ### Prueba de salud del servidor
 
